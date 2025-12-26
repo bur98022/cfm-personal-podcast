@@ -1,0 +1,30 @@
+You are producing a 5-episode “CFM Personal Podcast” for the week shown below.
+Audience: adult learner + optional family listening. Warm, clear, practical, not preachy.
+Style: podcast host. Use natural transitions and segment headers.
+Length targets:
+- Episodes 1–4: 20–30 minutes each
+- Episode 5 (Family): 15–25 minutes, simpler language
+
+Rules:
+- Stick to the week’s scope.
+- Use scripture references naturally.
+- Use short quotes only (1–2 sentences max per quote), then paraphrase/explain.
+- Include “Pause & Ponder” questions (2–4) per episode.
+- End each episode with a simple weekly challenge.
+
+OUTPUT FORMAT:
+Return 5 separate scripts with titles and approximate time markers.
+Also return short show notes per episode: key scriptures + 3 bullet takeaways.
+
+EPISODES:
+1) Big Picture & Context
+2) Scripture Walkthrough
+3) Doctrines & Principles
+4) Modern Life Application
+5) Family Edition (discussion style + questions for kids/teens)
+
+WEEK METADATA:
+{WEEK_TITLE}
+{WEEK_DATES}
+{SCRIPTURE_BLOCKS}
+{CFM_TEXT}
