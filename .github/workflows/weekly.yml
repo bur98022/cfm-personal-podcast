@@ -1,0 +1,31 @@
+name: Weekly CFM Personal Podcast
+
+on:
+  schedule:
+    - cron: "15 3 * * 1"  # 03:15 UTC Monday ≈ Sunday night America/Chicago (CST); DST shifts +1 hr
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run weekly generator
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          TZ: America/Chicago
+        run: |
+          python -m src.run_weekly
