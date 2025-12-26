@@ -1,8 +1,7 @@
-openai
+openai>=1.40.0
 google-api-python-client
 google-auth
-google-auth-httplib2
-google-auth-oauthlib
 python-dateutil
 requests
 beautifulsoup4
+lxml
