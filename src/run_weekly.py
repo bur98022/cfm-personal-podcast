@@ -16,7 +16,7 @@ from src.script_writer import (
     word_count,
 )
 from src.tts import tts_to_mp3
-from src.drive_upload import get_drive_service, find_or_create_folder, upload_text, upload_bytes
+from src.drive_upload import get_drive_service_oauth, find_or_create_folder, upload_text, upload_bytes
 
 def load_index(path: str = "cfm_index/cfm_2026_index.json"):
     with open(path, "r", encoding="utf-8") as f:
