@@ -3,6 +3,10 @@ import os
 import sys
 from pathlib import Path
 
+# Ensure repo root is importable when running as a script (GitHub Actions)
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT))
+
 from src.cfm_fetch import fetch_cfm_week_text
 from src.script_writer import (
     load_master_prompt,
@@ -13,10 +17,6 @@ from src.script_writer import (
 )
 from src.tts import tts_to_mp3
 from src.drive_upload import get_drive_service, find_or_create_folder, upload_text, upload_bytes
-
-# Ensure repo root is importable when running as a script
-REPO_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPO_ROOT))
 
 def load_index(path: str = "cfm_index/cfm_2026_index.json"):
     with open(path, "r", encoding="utf-8") as f:
