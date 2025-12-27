@@ -2,12 +2,13 @@ name: Weekly CFM Personal Podcast
 
 on:
   schedule:
-    - cron: "15 3 * * 1"  # 03:15 UTC Monday ≈ Sunday night America/Chicago (CST); DST shifts +1 hr
+    - cron: "15 3 * * 1"  # 03:15 UTC Monday ≈ Sunday night America/Chicago (CST); DST shifts by +1 hr
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,17 +19,14 @@ jobs:
           python-version: "3.11"
 
       - name: Install deps
-        run: |
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Run weekly generator
         env:
-  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-  GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
-  GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
-  GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
-  GOOGLE_OAUTH_REFRESH_TOKEN: ${{ secrets.GOOGLE_OAUTH_REFRESH_TOKEN }}
-  TZ: America/Chicago
-        run: |
-          python src/run_weekly.py
-
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+          GOOGLE_OAUTH_REFRESH_TOKEN: ${{ secrets.GOOGLE_OAUTH_REFRESH_TOKEN }}
+          TZ: America/Chicago
+        run: python src/run_weekly.py
