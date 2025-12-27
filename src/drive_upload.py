@@ -1,14 +1,44 @@
 import io
-import json
-from google.oauth2 import service_account
+import os
+from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 
-SCOPES = ["https://www.googleapis.com/auth/drive"]
+SCOPES = ["https://www.googleapis.com/auth/drive.file"]
 
-def get_drive_service(service_account_json_text: str):
-    info = json.loads(service_account_json_text)
-    creds = service_account.Credentials.from_service_account_info(info, scopes=SCOPES)
+def get_drive_service_oauth():
+    """
+    Builds a Drive service using OAuth refresh token (works with personal Gmail Drive).
+    Requires env vars:
+      GOOGLE_OAUTH_CLIENT_ID
+      GOOGLE_OAUTH_CLIENT_SECRET
+      GOOGLE_OAUTH_REFRESH_TOKEN
+    """
+    client_id = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
+    client_secret = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
+    refresh_token = os.getenv("GOOGLE_OAUTH_REFRESH_TOKEN")
+
+    missing = [k for k, v in [
+        ("GOOGLE_OAUTH_CLIENT_ID", client_id),
+        ("GOOGLE_OAUTH_CLIENT_SECRET", client_secret),
+        ("GOOGLE_OAUTH_REFRESH_TOKEN", refresh_token),
+    ] if not v]
+    if missing:
+        raise SystemExit(f"Missing OAuth env vars: {', '.join(missing)}")
+
+    creds = Credentials(
+        token=None,
+        refresh_token=refresh_token,
+        token_uri="https://oauth2.googleapis.com/token",
+        client_id=client_id,
+        client_secret=client_secret,
+        scopes=SCOPES,
+    )
+
+    # Ensure we have a valid access token
+    creds.refresh(Request())
+
     return build("drive", "v3", credentials=creds, cache_discovery=False)
 
 def find_or_create_folder(service, name: str, parent_id: str) -> str:
