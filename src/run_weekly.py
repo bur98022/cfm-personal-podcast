@@ -97,7 +97,7 @@ def main():
     scripts_text = generate_scripts(prompt=prompt, model="gpt-4o-mini")
 
     # Prepare Drive folders
-    service = get_drive_service(sa_json)
+    service = get_drive_service_oauth()
     year_folder_name = "2026 Old Testament"
     week_folder_name = f"Week {week_num:02d} - {week_title}"
 
