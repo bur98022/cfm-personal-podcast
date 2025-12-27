@@ -60,13 +60,11 @@ def main():
     # Required env vars
     openai_key = os.getenv("OPENAI_API_KEY")
     drive_folder_id = os.getenv("GDRIVE_FOLDER_ID")
-    sa_json = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
-
+    
     missing = [k for k, v in [
         ("OPENAI_API_KEY", openai_key),
         ("GDRIVE_FOLDER_ID", drive_folder_id),
-        ("GOOGLE_SERVICE_ACCOUNT_JSON", sa_json),
-    ] if not v]
+            ] if not v]
     if missing:
         raise SystemExit(f"Missing env vars: {', '.join(missing)}")
 
