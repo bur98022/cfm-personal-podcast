@@ -1,5 +1,6 @@
 import pathlib
 from openai import OpenAI
+from openai import RateLimitError, APIStatusError
 
 def load_master_prompt(path: str = "prompts/master_prompt.txt") -> str:
     return pathlib.Path(path).read_text(encoding="utf-8")
@@ -13,12 +14,37 @@ def build_prompt(master: str, week_title: str, week_dates: str, scripture_blocks
     )
 
 def generate_scripts(prompt: str, model: str = "gpt-4o-mini") -> str:
+    client = OpenAI()
+    try:
+        resp = client.responses.create(model=model, input=prompt)
+        return resp.output_text
+    except RateLimitError as e:
+        raise SystemExit(
+            "OpenAI API rate limit / quota issue.\n"
+            "Fix: Check OpenAI Platform billing for the API key used in GitHub Secrets.\n"
+            f"Details: {e}"
+        )
+    except APIStatusError as e:
+        raise SystemExit(f"OpenAI API error: {e}")
+
+def shorten_to_word_range(text: str, min_words: int, max_words: int, model: str = "gpt-4o-mini") -> str:
     """
-    Returns one big text response containing 5 episode scripts + show notes.
+    If a script is too long, ask the model to shorten it while keeping structure.
+    This is cheap at your 10-min scale and prevents huge TTS runs.
     """
     client = OpenAI()
-    resp = client.responses.create(
-        model=model,
-        input=prompt,
+    prompt = (
+        "Shorten the script below to fit the target length while preserving meaning, tone, and structure.\n"
+        f"Target: {min_words}-{max_words} words.\n"
+        "Rules:\n"
+        "- Keep it natural spoken audio.\n"
+        "- Preserve key points, scriptures, and 'Pause & Ponder' questions.\n"
+        "- Do not add new sources.\n\n"
+        "SCRIPT:\n"
+        f"{text}"
     )
+    resp = client.responses.create(model=model, input=prompt)
     return resp.output_text
+
+def word_count(s: str) -> int:
+    return len([w for w in s.split() if w.strip()])
