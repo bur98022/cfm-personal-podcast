@@ -13,6 +13,7 @@ from src.script_writer import (
     build_prompt,
     generate_scripts,
     shorten_to_word_range,
+    expand_to_word_range,
     word_count,
 )
 from src.tts import tts_to_mp3
@@ -126,6 +127,12 @@ def main():
     for i, ep_text in enumerate(episodes, start=1):
         wc = word_count(ep_text)
         print(f"Episode {i} word count: {wc}")
+
+        if wc < MIN_WORDS:
+    print(f"Episode {i} too short; expanding to {MIN_WORDS}-{MAX_WORDS} words...")
+    ep_text = expand_to_word_range(ep_text, MIN_WORDS, MAX_WORDS, model="gpt-4o-mini")
+    wc2 = word_count(ep_text)
+    print(f"Episode {i} new word count: {wc2}")
 
         if wc > MAX_WORDS:
             print(f"Episode {i} too long; shortening to {MIN_WORDS}-{MAX_WORDS} words...")
