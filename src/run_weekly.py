@@ -2,6 +2,7 @@ import json
 import os
 import sys
 from pathlib import Path
+from typing import List
 
 # Ensure repo root is importable when running as a script (GitHub Actions)
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -17,18 +18,26 @@ from src.script_writer import (
     word_count,
 )
 from src.tts import tts_to_mp3
-from src.drive_upload import get_drive_service_oauth, find_or_create_folder, upload_text, upload_bytes
+from src.drive_upload import (
+    get_drive_service_oauth,
+    find_or_create_folder,
+    upload_text,
+    upload_bytes,
+)
 
-def load_index(path: str = "cfm_index/cfm_2026_index.json"):
+
+def load_index(path: str = "cfm_index/cfm_2026_index.json") -> list[dict]:
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
 
 def parse_week_dates(start_date: str, end_date: str) -> str:
     return f"{start_date} to {end_date}"
 
-def split_episodes(all_text: str) -> list[str]:
+
+def split_episodes(all_text: str) -> List[str]:
     """
-    Split by the exact headers we defined in the master prompt.
+    Split by the exact headers defined in prompts/master_prompt.txt.
     Returns up to 4 episode strings.
     """
     headers = [
@@ -38,7 +47,6 @@ def split_episodes(all_text: str) -> list[str]:
         "=== EPISODE 4: MODERN LIFE APPLICATION ===",
     ]
 
-    # Find each header position
     positions = []
     for h in headers:
         idx = all_text.find(h)
@@ -57,20 +65,24 @@ def split_episodes(all_text: str) -> list[str]:
 
     return chunks[:4]
 
-def main():
+
+def main() -> None:
     # Required env vars
     openai_key = os.getenv("OPENAI_API_KEY")
     drive_folder_id = os.getenv("GDRIVE_FOLDER_ID")
-    
+
     missing = [k for k, v in [
         ("OPENAI_API_KEY", openai_key),
         ("GDRIVE_FOLDER_ID", drive_folder_id),
-            ] if not v]
+    ] if not v]
     if missing:
         raise SystemExit(f"Missing env vars: {', '.join(missing)}")
 
-    # Load index and pick Week 1 for now
+    # Load index and pick Week 1 for now (prototype)
     index = load_index()
+    if not index:
+        raise SystemExit("Index file is empty: cfm_index/cfm_2026_index.json")
+
     week = index[0]
     week_num = int(week["week"])
     week_title = week["title"]
@@ -81,8 +93,10 @@ def main():
     print(f"Generating Week {week_num}: {week_title}")
     print(f"Fetching: {url}")
 
+    # 1) Fetch curriculum text
     cfm_text = fetch_cfm_week_text(url)
 
+    # 2) Generate scripts (4 episodes)
     master = load_master_prompt()
     prompt = build_prompt(
         master=master,
@@ -95,8 +109,11 @@ def main():
     print("Generating scripts (4 episodes)...")
     scripts_text = generate_scripts(prompt=prompt, model="gpt-4o-mini")
 
-    # Prepare Drive folders
+    # 3) Connect to Drive (OAuth)
+    print("Connecting to Google Drive (OAuth)...")
     service = get_drive_service_oauth()
+
+    # 4) Create folders
     year_folder_name = "2026 Old Testament"
     week_folder_name = f"Week {week_num:02d} - {week_title}"
 
@@ -105,58 +122,59 @@ def main():
     scripts_folder_id = find_or_create_folder(service, "scripts", week_folder_id)
     audio_folder_id = find_or_create_folder(service, "audio", week_folder_id)
 
-    # Upload combined scripts
+    # 5) Upload combined scripts
+    print("Uploading combined script file...")
     upload_text(service, scripts_folder_id, "all_episodes.txt", scripts_text)
 
-    # Upload combined scripts
-upload_text(service, scripts_folder_id, "all_episodes.txt", scripts_text)
+    # 6) Split episodes
+    episodes = split_episodes(scripts_text)
+    print(f"Split into {len(episodes)} episode chunk(s).")
 
-# Split into 4 episodes using the exact headers from the master prompt
-episodes = split_episodes(scripts_text)
-print(f"Split into {len(episodes)} episode chunk(s).")
+    if len(episodes) != 4:
+        raise SystemExit(
+            "Could not reliably split into 4 episodes.\n"
+            "Open scripts/all_episodes.txt in Drive and confirm the model produced the exact headers.\n"
+            "If not, we’ll tighten the prompt further."
+        )
 
-if len(episodes) != 4:
-    raise SystemExit(
-        "Could not reliably split into 4 episodes. "
-        "Open scripts/all_episodes.txt in Drive to see the output, "
-        "then we’ll adjust the prompt/splitter."
-    )
+    # 7) Enforce 10-minute target via word count
+    MIN_WORDS = 1300
+    MAX_WORDS = 1600
 
-MIN_WORDS = 1300
-MAX_WORDS = 1600
+    voice = "alloy"
+    tts_model = "tts-1"
 
-print("Creating MP3s (4 episodes, ~10 min each)...")
-voice = "alloy"
-tts_model = "tts-1"
+    print("Creating MP3s (4 episodes, ~10 min each)...")
 
-for i, ep_text in enumerate(episodes, start=1):
-    wc = word_count(ep_text)
-    print(f"Episode {i} initial word count: {wc}")
-
-    if wc < MIN_WORDS:
-        print(f"Episode {i} too short; expanding to {MIN_WORDS}-{MAX_WORDS} words...")
-        ep_text = expand_to_word_range(ep_text, MIN_WORDS, MAX_WORDS, model="gpt-4o-mini")
+    for i, ep_text in enumerate(episodes, start=1):
         wc = word_count(ep_text)
-        print(f"Episode {i} expanded word count: {wc}")
+        print(f"Episode {i} initial word count: {wc}")
 
-    if wc > MAX_WORDS:
-        print(f"Episode {i} too long; shortening to {MIN_WORDS}-{MAX_WORDS} words...")
-        ep_text = shorten_to_word_range(ep_text, MIN_WORDS, MAX_WORDS, model="gpt-4o-mini")
-        wc = word_count(ep_text)
-        print(f"Episode {i} shortened word count: {wc}")
+        if wc < MIN_WORDS:
+            print(f"Episode {i} too short; expanding to {MIN_WORDS}-{MAX_WORDS} words...")
+            ep_text = expand_to_word_range(ep_text, MIN_WORDS, MAX_WORDS, model="gpt-4o-mini")
+            wc = word_count(ep_text)
+            print(f"Episode {i} expanded word count: {wc}")
 
-    # Save final episode script
-    script_name = f"W{week_num:02d}_E{i:02d}.txt"
-    upload_text(service, scripts_folder_id, script_name, ep_text)
+        if wc > MAX_WORDS:
+            print(f"Episode {i} too long; shortening to {MIN_WORDS}-{MAX_WORDS} words...")
+            ep_text = shorten_to_word_range(ep_text, MIN_WORDS, MAX_WORDS, model="gpt-4o-mini")
+            wc = word_count(ep_text)
+            print(f"Episode {i} shortened word count: {wc}")
 
-    # Generate MP3
-    mp3 = tts_to_mp3(ep_text, voice=voice, model=tts_model)
-    audio_name = f"W{week_num:02d}_E{i:02d}.mp3"
-    upload_bytes(service, audio_folder_id, audio_name, mp3, mime_type="audio/mpeg")
+        # Upload per-episode script
+        script_name = f"W{week_num:02d}_E{i:02d}.txt"
+        upload_text(service, scripts_folder_id, script_name, ep_text)
 
-    print(f"Uploaded {audio_name}")
+        # TTS + upload MP3
+        mp3 = tts_to_mp3(ep_text, voice=voice, model=tts_model)
+        audio_name = f"W{week_num:02d}_E{i:02d}.mp3"
+        upload_bytes(service, audio_folder_id, audio_name, mp3, mime_type="audio/mpeg")
 
-print("Done. Check your Google Drive folder.")
+        print(f"Uploaded {audio_name}")
+
+    print("Done. Check your Google Drive folder.")
+
 
 if __name__ == "__main__":
     main()
