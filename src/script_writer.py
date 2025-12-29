@@ -52,15 +52,18 @@ def expand_to_word_range(text: str, min_words: int, max_words: int, model: str =
     """
     client = OpenAI()
     prompt = (
-        "Expand the script below to fit the target length while preserving meaning, tone, and structure.\n"
-        f"Target: {min_words}-{max_words} words.\n"
-        "Rules:\n"
-        "- Keep it natural spoken audio.\n"
-        "- Add more explanation, modern-life examples, and smoother transitions.\n"
-        "- Keep scriptures and 'Pause & Ponder' questions.\n"
-        "- Do not add new sources beyond what is already present.\n\n"
-        "SCRIPT:\n"
-        f"{text}"
+    "Expand the script below to fit the target length while preserving meaning, tone, and structure.\n"
+    f"Target: {min_words}-{max_words} words. IMPORTANT: you MUST reach at least {min_words} words.\n"
+    "Rules:\n"
+    "- Keep it natural spoken audio.\n"
+    "- Add more explanation, more transitions, and 2-3 additional modern-life examples.\n"
+    "- Add one additional 'Pause & Ponder' question if needed.\n"
+    "- Do not add new sources beyond what is already present.\n"
+    "- Do not remove existing sections.\n\n"
+    "SCRIPT:\n"
+    f"{text}"
+)
+
     )
     resp = client.responses.create(model=model, input=prompt)
     return resp.output_text
