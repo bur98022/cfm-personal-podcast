@@ -124,7 +124,57 @@ def main():
     voice = "alloy"
     tts_model = "tts-1"
 
-    for i, ep_text in enumerate(episodes, start=1):
+    episodes = split_episodes(scripts_text)
+if len(episodes) != 4:
+    raise SystemExit(
+        "Could not reliably split into 4 episodes. "
+        "Check scripts/all_episodes.txt in Drive and we’ll adjust the prompt/splitter."
+    )
+
+MIN_WORDS = 1300
+MAX_WORDS = 1600
+
+print("Creating MP3s (4 episodes, ~10 min each)...")
+voice = "alloy"
+tts_model = "tts-1"
+
+for i, ep_text in enumerate(episodes, start=1):
+    wc = word_count(ep_text)
+    print(f"Episode {i} initial word count: {wc}")
+
+    if wc < MIN_WORDS:
+        print(f"Episode {i} too short; expanding to {MIN_WORDS}-{MAX_WORDS} words...")
+        ep_text = expand_to_word_range(
+            ep_text,
+            MIN_WORDS,
+            MAX_WORDS,
+            model="gpt-4o-mini"
+        )
+        wc = word_count(ep_text)
+        print(f"Episode {i} expanded word count: {wc}")
+
+    if wc > MAX_WORDS:
+        print(f"Episode {i} too long; shortening to {MIN_WORDS}-{MAX_WORDS} words...")
+        ep_text = shorten_to_word_range(
+            ep_text,
+            MIN_WORDS,
+            MAX_WORDS,
+            model="gpt-4o-mini"
+        )
+        wc = word_count(ep_text)
+        print(f"Episode {i} shortened word count: {wc}")
+
+    # Save final episode script
+    script_name = f"W{week_num:02d}_E{i:02d}.txt"
+    upload_text(service, scripts_folder_id, script_name, ep_text)
+
+    # Generate MP3
+    mp3 = tts_to_mp3(ep_text, voice=voice, model=tts_model)
+    audio_name = f"W{week_num:02d}_E{i:02d}.mp3"
+    upload_bytes(service, audio_folder_id, audio_name, mp3, mime_type="audio/mpeg")
+
+    print(f"Uploaded {audio_name}")
+
     wc = word_count(ep_text)
     print(f"Episode {i} word count: {wc}")
 
