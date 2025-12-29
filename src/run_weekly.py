@@ -125,30 +125,30 @@ def main():
     tts_model = "tts-1"
 
     for i, ep_text in enumerate(episodes, start=1):
-        wc = word_count(ep_text)
-        print(f"Episode {i} word count: {wc}")
+    wc = word_count(ep_text)
+    print(f"Episode {i} word count: {wc}")
 
-        if wc < MIN_WORDS:
-    print(f"Episode {i} too short; expanding to {MIN_WORDS}-{MAX_WORDS} words...")
-    ep_text = expand_to_word_range(ep_text, MIN_WORDS, MAX_WORDS, model="gpt-4o-mini")
-    wc2 = word_count(ep_text)
-    print(f"Episode {i} new word count: {wc2}")
+    if wc < MIN_WORDS:
+        print(f"Episode {i} too short; expanding to {MIN_WORDS}-{MAX_WORDS} words...")
+        ep_text = expand_to_word_range(ep_text, MIN_WORDS, MAX_WORDS, model="gpt-4o-mini")
+        wc2 = word_count(ep_text)
+        print(f"Episode {i} new word count: {wc2}")
 
-        if wc > MAX_WORDS:
-            print(f"Episode {i} too long; shortening to {MIN_WORDS}-{MAX_WORDS} words...")
-            ep_text = shorten_to_word_range(ep_text, MIN_WORDS, MAX_WORDS, model="gpt-4o-mini")
-            wc2 = word_count(ep_text)
-            print(f"Episode {i} new word count: {wc2}")
+    if wc > MAX_WORDS:
+        print(f"Episode {i} too long; shortening to {MIN_WORDS}-{MAX_WORDS} words...")
+        ep_text = shorten_to_word_range(ep_text, MIN_WORDS, MAX_WORDS, model="gpt-4o-mini")
+        wc2 = word_count(ep_text)
+        print(f"Episode {i} new word count: {wc2}")
 
-        # Save final episode script
-        script_name = f"W{week_num:02d}_E{i:02d}.txt"
-        upload_text(service, scripts_folder_id, script_name, ep_text)
+    # Save final episode script
+    script_name = f"W{week_num:02d}_E{i:02d}.txt"
+    upload_text(service, scripts_folder_id, script_name, ep_text)
 
-        # TTS
-        mp3 = tts_to_mp3(ep_text, voice=voice, model=tts_model)
-        audio_name = f"W{week_num:02d}_E{i:02d}.mp3"
-        upload_bytes(service, audio_folder_id, audio_name, mp3, mime_type="audio/mpeg")
-        print(f"Uploaded {audio_name}")
+    # TTS
+    mp3 = tts_to_mp3(ep_text, voice=voice, model=tts_model)
+    audio_name = f"W{week_num:02d}_E{i:02d}.mp3"
+    upload_bytes(service, audio_folder_id, audio_name, mp3, mime_type="audio/mpeg")
+    print(f"Uploaded {audio_name}")
 
     print("Done. Check your Google Drive folder.")
 
