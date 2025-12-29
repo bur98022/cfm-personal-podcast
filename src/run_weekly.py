@@ -151,10 +151,17 @@ def main() -> None:
         print(f"Episode {i} initial word count: {wc}")
 
         if wc < MIN_WORDS:
-            print(f"Episode {i} too short; expanding to {MIN_WORDS}-{MAX_WORDS} words...")
-            ep_text = expand_to_word_range(ep_text, MIN_WORDS, MAX_WORDS, model="gpt-4o-mini")
-            wc = word_count(ep_text)
-            print(f"Episode {i} expanded word count: {wc}")
+    print(f"Episode {i} too short; expanding to {MIN_WORDS}-{MAX_WORDS} words...")
+    ep_text = expand_to_word_range(ep_text, MIN_WORDS, MAX_WORDS, model="gpt-4o-mini")
+    wc = word_count(ep_text)
+    print(f"Episode {i} expanded word count: {wc}")
+
+    # If still short, do one more expansion pass (cheap insurance)
+    if wc < MIN_WORDS:
+        print(f"Episode {i} still short; expanding again...")
+        ep_text = expand_to_word_range(ep_text, MIN_WORDS, MAX_WORDS, model="gpt-4o-mini")
+        wc = word_count(ep_text)
+        print(f"Episode {i} expanded (pass 2) word count: {wc}")
 
         if wc > MAX_WORDS:
             print(f"Episode {i} too long; shortening to {MIN_WORDS}-{MAX_WORDS} words...")
