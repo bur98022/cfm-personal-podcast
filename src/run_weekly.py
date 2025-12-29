@@ -108,27 +108,18 @@ def main():
     # Upload combined scripts
     upload_text(service, scripts_folder_id, "all_episodes.txt", scripts_text)
 
-    episodes = split_episodes(scripts_text)
-    if len(episodes) != 4:
-        # Failsafe: still upload combined scripts; stop before TTS to avoid garbage audio
-        raise SystemExit(
-            "Could not reliably split into 4 episodes. "
-            "Check scripts/all_episodes.txt in Drive and we’ll adjust the prompt/splitter."
-        )
+    # Upload combined scripts
+upload_text(service, scripts_folder_id, "all_episodes.txt", scripts_text)
 
-    # Enforce 10-min-ish length
-    MIN_WORDS = 1300
-    MAX_WORDS = 1600
+# Split into 4 episodes using the exact headers from the master prompt
+episodes = split_episodes(scripts_text)
+print(f"Split into {len(episodes)} episode chunk(s).")
 
-    print("Creating MP3s (4 episodes, ~10 min each)...")
-    voice = "alloy"
-    tts_model = "tts-1"
-
-    episodes = split_episodes(scripts_text)
 if len(episodes) != 4:
     raise SystemExit(
         "Could not reliably split into 4 episodes. "
-        "Check scripts/all_episodes.txt in Drive and we’ll adjust the prompt/splitter."
+        "Open scripts/all_episodes.txt in Drive to see the output, "
+        "then we’ll adjust the prompt/splitter."
     )
 
 MIN_WORDS = 1300
@@ -144,23 +135,13 @@ for i, ep_text in enumerate(episodes, start=1):
 
     if wc < MIN_WORDS:
         print(f"Episode {i} too short; expanding to {MIN_WORDS}-{MAX_WORDS} words...")
-        ep_text = expand_to_word_range(
-            ep_text,
-            MIN_WORDS,
-            MAX_WORDS,
-            model="gpt-4o-mini"
-        )
+        ep_text = expand_to_word_range(ep_text, MIN_WORDS, MAX_WORDS, model="gpt-4o-mini")
         wc = word_count(ep_text)
         print(f"Episode {i} expanded word count: {wc}")
 
     if wc > MAX_WORDS:
         print(f"Episode {i} too long; shortening to {MIN_WORDS}-{MAX_WORDS} words...")
-        ep_text = shorten_to_word_range(
-            ep_text,
-            MIN_WORDS,
-            MAX_WORDS,
-            model="gpt-4o-mini"
-        )
+        ep_text = shorten_to_word_range(ep_text, MIN_WORDS, MAX_WORDS, model="gpt-4o-mini")
         wc = word_count(ep_text)
         print(f"Episode {i} shortened word count: {wc}")
 
@@ -175,32 +156,7 @@ for i, ep_text in enumerate(episodes, start=1):
 
     print(f"Uploaded {audio_name}")
 
-    wc = word_count(ep_text)
-    print(f"Episode {i} word count: {wc}")
-
-    if wc < MIN_WORDS:
-        print(f"Episode {i} too short; expanding to {MIN_WORDS}-{MAX_WORDS} words...")
-        ep_text = expand_to_word_range(ep_text, MIN_WORDS, MAX_WORDS, model="gpt-4o-mini")
-        wc2 = word_count(ep_text)
-        print(f"Episode {i} new word count: {wc2}")
-
-    if wc > MAX_WORDS:
-        print(f"Episode {i} too long; shortening to {MIN_WORDS}-{MAX_WORDS} words...")
-        ep_text = shorten_to_word_range(ep_text, MIN_WORDS, MAX_WORDS, model="gpt-4o-mini")
-        wc2 = word_count(ep_text)
-        print(f"Episode {i} new word count: {wc2}")
-
-    # Save final episode script
-    script_name = f"W{week_num:02d}_E{i:02d}.txt"
-    upload_text(service, scripts_folder_id, script_name, ep_text)
-
-    # TTS
-    mp3 = tts_to_mp3(ep_text, voice=voice, model=tts_model)
-    audio_name = f"W{week_num:02d}_E{i:02d}.mp3"
-    upload_bytes(service, audio_folder_id, audio_name, mp3, mime_type="audio/mpeg")
-    print(f"Uploaded {audio_name}")
-
-    print("Done. Check your Google Drive folder.")
+print("Done. Check your Google Drive folder.")
 
 if __name__ == "__main__":
     main()
