@@ -21,7 +21,13 @@ jobs:
       - name: Install deps
         run: pip install -r requirements.txt
 
-            - name: Run weekly generator
+      - name: Debug - show script exists
+        run: |
+          ls -la
+          ls -la src || true
+          sed -n '1,80p' src/run_weekly.py || true
+
+      - name: Run weekly generator
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
@@ -31,4 +37,3 @@ jobs:
           TZ: America/Chicago
         run: |
           python -u src/run_weekly.py
-
