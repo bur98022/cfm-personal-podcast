@@ -1,72 +1,159 @@
-import pathlib
-from openai import OpenAI
-from openai import RateLimitError, APIStatusError
+import json
+import os
+import sys
+from pathlib import Path
+from typing import List
 
-def load_master_prompt(path: str = "prompts/master_prompt.txt") -> str:
-    return pathlib.Path(path).read_text(encoding="utf-8")
+# Ensure repo root is importable (critical for GitHub Actions)
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT))
 
-def build_prompt(master: str, week_title: str, week_dates: str, scripture_blocks: str, cfm_text: str) -> str:
-    return (
-        master.replace("{WEEK_TITLE}", week_title)
-              .replace("{WEEK_DATES}", week_dates)
-              .replace("{SCRIPTURE_BLOCKS}", scripture_blocks)
-              .replace("{CFM_TEXT}", cfm_text)
+from src.cfm_fetch import fetch_cfm_week_text
+from src.script_writer import (
+    load_master_prompt,
+    build_prompt,
+    generate_scripts,
+    expand_to_word_range,
+    shorten_to_word_range,
+    word_count,
+)
+from src.tts import tts_to_mp3
+from src.drive_upload import (
+    get_drive_service_oauth,
+    find_or_create_folder,
+    upload_text,
+    upload_bytes,
+)
+
+
+def load_index(path: str = "cfm_index/cfm_2026_index.json") -> list[dict]:
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def split_episodes(all_text: str) -> List[str]:
+    headers = [
+        "=== EPISODE 1: BIG PICTURE & CONTEXT ===",
+        "=== EPISODE 2: SCRIPTURE WALKTHROUGH ===",
+        "=== EPISODE 3: DOCTRINES & PRINCIPLES ===",
+        "=== EPISODE 4: MODERN LIFE APPLICATION ===",
+    ]
+    positions = []
+    for h in headers:
+        idx = all_text.find(h)
+        if idx != -1:
+            positions.append(idx)
+
+    if len(positions) != 4:
+        return []
+
+    positions.append(len(all_text))
+
+    chunks = []
+    for i in range(4):
+        chunks.append(all_text[positions[i] : positions[i + 1]].strip())
+    return chunks
+
+
+def main() -> None:
+    print("RUN_WEEKLY: script started")
+
+    # Env checks
+    if not os.getenv("OPENAI_API_KEY"):
+        raise SystemExit("Missing OPENAI_API_KEY")
+
+    drive_root_id = os.getenv("GDRIVE_FOLDER_ID")
+    if not drive_root_id:
+        raise SystemExit("Missing GDRIVE_FOLDER_ID")
+
+    # Load index (Week 1 prototype for now)
+    index = load_index()
+    if not index:
+        raise SystemExit("Index is empty: cfm_index/cfm_2026_index.json")
+
+    week = index[0]
+    week_num = int(week["week"])
+    week_title = week["title"]
+    week_dates = f'{week["start_date"]} to {week["end_date"]}'
+    scripture_blocks = week.get("scripture_blocks", "")
+    url = week["url"]
+
+    print(f"Generating Week {week_num}: {week_title}")
+    print(f"Fetching: {url}")
+
+    # Fetch CFM content
+    cfm_text = fetch_cfm_week_text(url)
+    print(f"Fetched CFM text length: {len(cfm_text)} chars")
+
+    # Generate scripts
+    master = load_master_prompt()
+    prompt = build_prompt(
+        master=master,
+        week_title=f"Week {week_num}: {week_title}",
+        week_dates=week_dates,
+        scripture_blocks=scripture_blocks,
+        cfm_text=cfm_text,
     )
 
-def generate_scripts(prompt: str, model: str = "gpt-4o-mini") -> str:
-    """
-    Generate the 4 episode scripts + show notes in one response.
-    """
-    client = OpenAI()
-    try:
-        resp = client.responses.create(model=model, input=prompt)
-        return resp.output_text
-    except RateLimitError as e:
-        raise SystemExit(
-            "OpenAI API rate limit / quota issue.\n"
-            "Fix: Check OpenAI Platform billing for the API key used in GitHub Secrets.\n"
-            f"Details: {e}"
-        )
-    except APIStatusError as e:
-        raise SystemExit(f"OpenAI API error: {e}")
+    print("Generating scripts (4 episodes)...")
+    scripts_text = generate_scripts(prompt=prompt, model="gpt-4o-mini")
+    print(f"Generated scripts length: {len(scripts_text)} chars")
 
-def shorten_to_word_range(text: str, min_words: int, max_words: int, model: str = "gpt-4o-mini") -> str:
-    """
-    Shorten a script to within the word range.
-    """
-    client = OpenAI()
-    prompt = (
-        "Shorten the script below to fit the target length while preserving meaning, tone, and structure.\n"
-        f"Target: {min_words}-{max_words} words.\n"
-        "Rules:\n"
-        "- Keep it natural spoken audio.\n"
-        "- Preserve key points, scriptures, and 'Pause & Ponder' questions.\n"
-        "- Do not add new sources.\n\n"
-        "SCRIPT:\n"
-        f"{text}"
-    )
-    resp = client.responses.create(model=model, input=prompt)
-    return resp.output_text
+    # Drive OAuth
+    print("Connecting to Google Drive (OAuth)...")
+    service = get_drive_service_oauth()
 
-def expand_to_word_range(text: str, min_words: int, max_words: int, model: str = "gpt-4o-mini") -> str:
-    """
-    Expand a script to within the word range.
-    """
-    client = OpenAI()
-    prompt = (
-        "Expand the script below to fit the target length while preserving meaning, tone, and structure.\n"
-        f"Target: {min_words}-{max_words} words. IMPORTANT: you MUST reach at least {min_words} words.\n"
-        "Rules:\n"
-        "- Keep it natural spoken audio.\n"
-        "- Add more explanation, more transitions, and 2-3 additional modern-life examples.\n"
-        "- Add one additional 'Pause & Ponder' question if needed.\n"
-        "- Do not add new sources beyond what is already present.\n"
-        "- Do not remove existing sections.\n\n"
-        "SCRIPT:\n"
-        f"{text}"
-    )
-    resp = client.responses.create(model=model, input=prompt)
-    return resp.output_text
+    # Folders
+    year_folder_id = find_or_create_folder(service, "2026 Old Testament", drive_root_id)
+    week_folder_id = find_or_create_folder(service, f"Week {week_num:02d} - {week_title}", year_folder_id)
+    scripts_folder_id = find_or_create_folder(service, "scripts", week_folder_id)
+    audio_folder_id = find_or_create_folder(service, "audio", week_folder_id)
 
-def word_count(s: str) -> int:
-    return len([w for w in s.split() if w.strip()])
+    # Upload combined script
+    fid = upload_text(service, scripts_folder_id, "all_episodes.txt", scripts_text)
+    print(f"Uploaded all_episodes.txt (id={fid})")
+
+    # Split episodes
+    episodes = split_episodes(scripts_text)
+    print(f"Split into {len(episodes)} episode(s).")
+    if len(episodes) != 4:
+        raise SystemExit("Could not split into 4 episodes. Check all_episodes.txt headers.")
+
+    # Enforce ~10 minutes
+    MIN_WORDS = 1300
+    MAX_WORDS = 1600
+
+    voice = "alloy"
+    tts_model = "tts-1"
+
+    for i, ep_text in enumerate(episodes, start=1):
+        wc = word_count(ep_text)
+        print(f"Episode {i} initial words: {wc}")
+
+        if wc < MIN_WORDS:
+            ep_text = expand_to_word_range(ep_text, MIN_WORDS, MAX_WORDS)
+            wc = word_count(ep_text)
+            print(f"Episode {i} expanded words: {wc}")
+            if wc < MIN_WORDS:
+                ep_text = expand_to_word_range(ep_text, MIN_WORDS, MAX_WORDS)
+                wc = word_count(ep_text)
+                print(f"Episode {i} expanded again: {wc}")
+
+        if wc > MAX_WORDS:
+            ep_text = shorten_to_word_range(ep_text, MIN_WORDS, MAX_WORDS)
+            wc = word_count(ep_text)
+            print(f"Episode {i} shortened words: {wc}")
+
+        sid = upload_text(service, scripts_folder_id, f"W{week_num:02d}_E{i:02d}.txt", ep_text)
+        print(f"Uploaded script {i} (id={sid})")
+
+        mp3 = tts_to_mp3(ep_text, voice=voice, model=tts_model)
+        aid = upload_bytes(service, audio_folder_id, f"W{week_num:02d}_E{i:02d}.mp3", mp3, mime_type="audio/mpeg")
+        print(f"Uploaded audio {i} (id={aid})")
+
+    print("RUN_WEEKLY: done")
+
+
+if __name__ == "__main__":
+    print("RUN_WEEKLY: __main__ reached")
+    main()
