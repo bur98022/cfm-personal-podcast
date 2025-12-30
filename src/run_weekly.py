@@ -215,6 +215,15 @@ def main() -> None:
         # Audio text excludes show notes
         audio_text = strip_show_notes_for_audio(ep_text)
         mp3 = tts_to_mp3(audio_text, voice=voice, model=tts_model)
+        from pathlib import Path
+
+        dist = Path("dist")
+        dist.mkdir(parents=True, exist_ok=True)
+
+        mp3_filename = f"W{week_num:02d}_E{i:02d}.mp3"
+        mp3_path = dist / mp3_filename
+        mp3_path.write_bytes(mp3)
+
         aid = upload_bytes(
             service,
             audio_folder_id,
