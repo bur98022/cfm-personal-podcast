@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+  xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
+
+  <channel>
+    <title>CFM Personal Podcast</title>
+    <link>https://github.com/bur98022/cfm-personal-podcast</link>
+    <language>en-us</language>
+    <description>
+      Weekly Come, Follow Me companion podcast for personal and family study.
+    </description>
+
+    <itunes:author>Brandon Burton</itunes:author>
+    <itunes:explicit>false</itunes:explicit>
+    <itunes:type>episodic</itunes:type>
+
+  </channel>
+</rss>
