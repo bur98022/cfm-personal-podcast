@@ -17,6 +17,9 @@ from src.script_writer import (
     shorten_to_word_range,
     word_count,
 )
+audio_text = ep_text.split("SHOW NOTES:", 1)[0].strip()
+mp3 = tts_to_mp3(audio_text, voice=voice, model=tts_model)
+
 from src.tts import tts_to_mp3
 from src.drive_upload import (
     get_drive_service_oauth,
