@@ -3,8 +3,416 @@
     "week": 1,
     "start_date": "2025-12-29",
     "end_date": "2026-01-04",
-    "title": "Introduction to the Old Testament",
+    "title": "The First Testament of Jesus Christ: Introduction to the Old Testament",
     "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/01?lang=eng",
-    "scripture_blocks": "Introduction to the Old Testament (December 29–January 4)"
+    "scripture_blocks": "Introduction to the Old Testament"
+  },
+  {
+    "week": 2,
+    "start_date": "2026-01-05",
+    "end_date": "2026-01-11",
+    "title": "“This Is My Work and My Glory”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/02?lang=eng",
+    "scripture_blocks": "Moses 1; Abraham 3"
+  },
+  {
+    "week": 3,
+    "start_date": "2026-01-12",
+    "end_date": "2026-01-18",
+    "title": "“In the Beginning God Created the Heaven and the Earth”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/03?lang=eng",
+    "scripture_blocks": "Genesis 1–2; Moses 2–3; Abraham 4–5"
+  },
+  {
+    "week": 4,
+    "start_date": "2026-01-19",
+    "end_date": "2026-01-25",
+    "title": "The Fall of Adam and Eve",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/04?lang=eng",
+    "scripture_blocks": "Genesis 3–4; Moses 4–5"
+  },
+  {
+    "week": 5,
+    "start_date": "2026-01-26",
+    "end_date": "2026-02-01",
+    "title": "“Teach These Things Freely unto Your Children”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/05?lang=eng",
+    "scripture_blocks": "Genesis 5; Moses 6"
+  },
+  {
+    "week": 6,
+    "start_date": "2026-02-02",
+    "end_date": "2026-02-08",
+    "title": "“The Lord Called His People Zion”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/06?lang=eng",
+    "scripture_blocks": "Moses 7"
+  },
+  {
+    "week": 7,
+    "start_date": "2026-02-09",
+    "end_date": "2026-02-15",
+    "title": "“Noah Found Grace in the Eyes of the Lord”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/07?lang=eng",
+    "scripture_blocks": "Genesis 6–11; Moses 8"
+  },
+  {
+    "week": 8,
+    "start_date": "2026-02-16",
+    "end_date": "2026-02-22",
+    "title": "“To Be a Greater Follower of Righteousness”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/08?lang=eng",
+    "scripture_blocks": "Genesis 12–17; Abraham 1–2"
+  },
+  {
+    "week": 9,
+    "start_date": "2026-02-23",
+    "end_date": "2026-03-01",
+    "title": "“Is Any Thing Too Hard for the Lord?”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/09?lang=eng",
+    "scripture_blocks": "Genesis 18–23"
+  },
+  {
+    "week": 10,
+    "start_date": "2026-03-02",
+    "end_date": "2026-03-08",
+    "title": "“Let God Prevail”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/10?lang=eng",
+    "scripture_blocks": "Genesis 24–33"
+  },
+  {
+    "week": 11,
+    "start_date": "2026-03-09",
+    "end_date": "2026-03-15",
+    "title": "“The Lord Was with Joseph”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/11?lang=eng",
+    "scripture_blocks": "Genesis 37–41"
+  },
+  {
+    "week": 12,
+    "start_date": "2026-03-16",
+    "end_date": "2026-03-22",
+    "title": "“God Meant It unto Good”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/12?lang=eng",
+    "scripture_blocks": "Genesis 42–50"
+  },
+  {
+    "week": 13,
+    "start_date": "2026-03-23",
+    "end_date": "2026-03-29",
+    "title": "“I Have Remembered My Covenant”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/13?lang=eng",
+    "scripture_blocks": "Exodus 1–6"
+  },
+  {
+    "week": 14,
+    "start_date": "2026-03-30",
+    "end_date": "2026-04-05",
+    "title": "“He Will Swallow Up Death in Victory”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/14?lang=eng",
+    "scripture_blocks": "Easter"
+  },
+  {
+    "week": 15,
+    "start_date": "2026-04-06",
+    "end_date": "2026-04-12",
+    "title": "“Remember This Day, in Which Ye Came Out from Egypt”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/15?lang=eng",
+    "scripture_blocks": "Exodus 7–13"
+  },
+  {
+    "week": 16,
+    "start_date": "2026-04-13",
+    "end_date": "2026-04-19",
+    "title": "“Stand Still, and See the Salvation of the Lord”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/16?lang=eng",
+    "scripture_blocks": "Exodus 14–18"
+  },
+  {
+    "week": 17,
+    "start_date": "2026-04-20",
+    "end_date": "2026-04-26",
+    "title": "“All That the Lord Hath Spoken We Will Do”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/17?lang=eng",
+    "scripture_blocks": "Exodus 19–20; 24; 31–34"
+  },
+  {
+    "week": 18,
+    "start_date": "2026-04-27",
+    "end_date": "2026-05-03",
+    "title": "“Holiness to the Lord”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/18?lang=eng",
+    "scripture_blocks": "Exodus 35–40; Leviticus 1; 4; 16; 19"
+  },
+  {
+    "week": 19,
+    "start_date": "2026-05-04",
+    "end_date": "2026-05-10",
+    "title": "“Rebel Not Ye against the Lord, Neither Fear”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/19?lang=eng",
+    "scripture_blocks": "Numbers 11–14; 20–24; 27"
+  },
+  {
+    "week": 20,
+    "start_date": "2026-05-11",
+    "end_date": "2026-05-17",
+    "title": "“Beware Lest Thou Forget the Lord”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/20?lang=eng",
+    "scripture_blocks": "Deuteronomy 6–8; 15; 18; 29–30; 34"
+  },
+  {
+    "week": 21,
+    "start_date": "2026-05-18",
+    "end_date": "2026-05-24",
+    "title": "“Be Strong and of a Good Courage”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/21?lang=eng",
+    "scripture_blocks": "Joshua 1–8; 23–24"
+  },
+  {
+    "week": 22,
+    "start_date": "2026-05-25",
+    "end_date": "2026-05-31",
+    "title": "“The Lord Raised Up a Deliverer”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/22?lang=eng",
+    "scripture_blocks": "Judges 2–4; 6–8; 13–16"
+  },
+  {
+    "week": 23,
+    "start_date": "2026-06-01",
+    "end_date": "2026-06-07",
+    "title": "“My Heart Rejoiceth in the Lord”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/23?lang=eng",
+    "scripture_blocks": "Ruth; 1 Samuel 1–7"
+  },
+  {
+    "week": 24,
+    "start_date": "2026-06-08",
+    "end_date": "2026-06-14",
+    "title": "“The Lord Looketh on the Heart”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/24?lang=eng",
+    "scripture_blocks": "1 Samuel 8–10; 13; 15–16"
+  },
+  {
+    "week": 25,
+    "start_date": "2026-06-15",
+    "end_date": "2026-06-21",
+    "title": "“The Battle Is the Lord’s”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/25?lang=eng",
+    "scripture_blocks": "1 Samuel 17–18; 24–26; 2 Samuel 5–7"
+  },
+  {
+    "week": 26,
+    "start_date": "2026-06-22",
+    "end_date": "2026-06-28",
+    "title": "“Hear Thou in Heaven Their Prayer”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/26?lang=eng",
+    "scripture_blocks": "2 Samuel 11–12; 1 Kings 3; 6–9; 11"
+  },
+  {
+    "week": 27,
+    "start_date": "2026-06-29",
+    "end_date": "2026-07-05",
+    "title": "“If the Lord Be God, Follow Him”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/27?lang=eng",
+    "scripture_blocks": "1 Kings 12–13; 17–22"
+  },
+  {
+    "week": 28,
+    "start_date": "2026-07-06",
+    "end_date": "2026-07-12",
+    "title": "“There Is a Prophet in Israel”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/28?lang=eng",
+    "scripture_blocks": "2 Kings 2–7"
+  },
+  {
+    "week": 29,
+    "start_date": "2026-07-13",
+    "end_date": "2026-07-19",
+    "title": "“He Trusted in the Lord God of Israel”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/29?lang=eng",
+    "scripture_blocks": "2 Kings 16–25"
+  },
+  {
+    "week": 30,
+    "start_date": "2026-07-20",
+    "end_date": "2026-07-26",
+    "title": "“Our Eyes Are upon Thee”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/30?lang=eng",
+    "scripture_blocks": "2 Chronicles 14–20; 26; 30"
+  },
+  {
+    "week": 31,
+    "start_date": "2026-07-27",
+    "end_date": "2026-08-02",
+    "title": "“I Am Doing a Great Work”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/31?lang=eng",
+    "scripture_blocks": "Ezra 1; 3–7; Nehemiah 2; 4–6; 8"
+  },
+  {
+    "week": 32,
+    "start_date": "2026-08-03",
+    "end_date": "2026-08-09",
+    "title": "“Thou Art Come … for Such a Time as This”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/32?lang=eng",
+    "scripture_blocks": "Esther"
+  },
+  {
+    "week": 33,
+    "start_date": "2026-08-10",
+    "end_date": "2026-08-16",
+    "title": "“Yet Will I Trust in Him”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/33?lang=eng",
+    "scripture_blocks": "Job 1–3; 12–14; 19; 21–24; 38–40; 42"
+  },
+  {
+    "week": 34,
+    "start_date": "2026-08-17",
+    "end_date": "2026-08-23",
+    "title": "“The Lord Is My Shepherd”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/34?lang=eng",
+    "scripture_blocks": "Psalms 1–2; 8; 19–33; 40; 46"
+  },
+  {
+    "week": 35,
+    "start_date": "2026-08-24",
+    "end_date": "2026-08-30",
+    "title": "“I Will Declare What He Hath Done for My Soul”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/35?lang=eng",
+    "scripture_blocks": "Psalms 49–51; 61–66; 69–72; 77–78; 85–86"
+  },
+  {
+    "week": 36,
+    "start_date": "2026-08-31",
+    "end_date": "2026-09-06",
+    "title": "“Let Every Thing That Hath Breath Praise the Lord”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/36?lang=eng",
+    "scripture_blocks": "Psalms 102–103; 110; 116–119; 127–128; 135–139; 146–150"
+  },
+  {
+    "week": 37,
+    "start_date": "2026-09-07",
+    "end_date": "2026-09-13",
+    "title": "“He Shall Direct Thy Paths”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/37?lang=eng",
+    "scripture_blocks": "Proverbs 1–4; 15–16; 22; 31; Ecclesiastes 1–3; 11–12"
+  },
+  {
+    "week": 38,
+    "start_date": "2026-09-14",
+    "end_date": "2026-09-20",
+    "title": "“God Is My Salvation”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/38?lang=eng",
+    "scripture_blocks": "Isaiah 1–12"
+  },
+  {
+    "week": 39,
+    "start_date": "2026-09-21",
+    "end_date": "2026-09-27",
+    "title": "“A Marvellous Work and a Wonder”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/39?lang=eng",
+    "scripture_blocks": "Isaiah 13–14; 22; 24–30; 35"
+  },
+  {
+    "week": 40,
+    "start_date": "2026-09-28",
+    "end_date": "2026-10-04",
+    "title": "“Comfort Ye My People”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/40?lang=eng",
+    "scripture_blocks": "Isaiah 40–49"
+  },
+  {
+    "week": 41,
+    "start_date": "2026-10-05",
+    "end_date": "2026-10-11",
+    "title": "“He Hath Borne Our Griefs, and Carried Our Sorrows”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/41?lang=eng",
+    "scripture_blocks": "Isaiah 50–57"
+  },
+  {
+    "week": 42,
+    "start_date": "2026-10-12",
+    "end_date": "2026-10-18",
+    "title": "“The Redeemer Shall Come to Zion”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/42?lang=eng",
+    "scripture_blocks": "Isaiah 58–66"
+  },
+  {
+    "week": 43,
+    "start_date": "2026-10-19",
+    "end_date": "2026-10-25",
+    "title": "“Before I Formed Thee in the Belly I Knew Thee”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/43?lang=eng",
+    "scripture_blocks": "Jeremiah 1–3; 7; 16–18; 20"
+  },
+  {
+    "week": 44,
+    "start_date": "2026-10-26",
+    "end_date": "2026-11-01",
+    "title": "“I Will Turn Their Mourning into Joy”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/44?lang=eng",
+    "scripture_blocks": "Jeremiah 31–33; 36–39; Lamentations 1; 3"
+  },
+  {
+    "week": 45,
+    "start_date": "2026-11-02",
+    "end_date": "2026-11-08",
+    "title": "“A New Spirit Will I Put within You”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/45?lang=eng",
+    "scripture_blocks": "Ezekiel 1–3; 33–34; 36–37; 47"
+  },
+  {
+    "week": 46,
+    "start_date": "2026-11-09",
+    "end_date": "2026-11-15",
+    "title": "“There Is No Other God That Can Deliver”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/46?lang=eng",
+    "scripture_blocks": "Daniel 1–7"
+  },
+  {
+    "week": 47,
+    "start_date": "2026-11-16",
+    "end_date": "2026-11-22",
+    "title": "“I Will Love Them Freely”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/47?lang=eng",
+    "scripture_blocks": "Hosea 1–6; 10–14; Joel"
+  },
+  {
+    "week": 48,
+    "start_date": "2026-11-23",
+    "end_date": "2026-11-29",
+    "title": "“Seek the Lord, and Ye Shall Live”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/48?lang=eng",
+    "scripture_blocks": "Amos; Obadiah; Jonah"
+  },
+  {
+    "week": 49,
+    "start_date": "2026-11-30",
+    "end_date": "2026-12-06",
+    "title": "“He Delighteth in Mercy”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/49?lang=eng",
+    "scripture_blocks": "Micah; Nahum; Habakkuk; Zephaniah"
+  },
+  {
+    "week": 50,
+    "start_date": "2026-12-07",
+    "end_date": "2026-12-13",
+    "title": "“Holiness unto the Lord”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/50?lang=eng",
+    "scripture_blocks": "Haggai 1–2; Zechariah 1–4; 7–14"
+  },
+  {
+    "week": 51,
+    "start_date": "2026-12-14",
+    "end_date": "2026-12-20",
+    "title": "“I Have Loved You, Saith the Lord”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/51?lang=eng",
+    "scripture_blocks": "Malachi"
+  },
+  {
+    "week": 52,
+    "start_date": "2026-12-21",
+    "end_date": "2026-12-27",
+    "title": "“We Have Waited for Him, and He Will Save Us”",
+    "url": "https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026/52?lang=eng",
+    "scripture_blocks": "Christmas"
   }
 ]
