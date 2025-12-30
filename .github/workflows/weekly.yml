@@ -2,8 +2,11 @@ name: Weekly CFM Personal Podcast
 
 on:
   schedule:
-    - cron: "15 3 * * 1"  # 03:15 UTC Monday ≈ Sunday night America/Chicago (CST); DST shifts by +1 hr
+    - cron: "15 3 * * 1"
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -21,16 +24,6 @@ jobs:
       - name: Install deps
         run: pip install -r requirements.txt
 
-      - name: Debug - show script exists
-        run: |
-          ls -la
-          ls -la src || true
-          sed -n '1,80p' src/run_weekly.py || true
-
-      - name: Debug - show script_writer
-        run: |
-          sed -n '1,200p' src/script_writer.py
-
       - name: Run weekly generator
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -41,3 +34,30 @@ jobs:
           TZ: America/Chicago
         run: |
           python -u src/run_weekly.py
+
+      - name: Load week metadata
+        run: |
+          cat dist/week_meta.env
+          cat dist/week_meta.env >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.PODCAST_TAG }}
+          name: ${{ env.PODCAST_TAG }}
+          files: dist/*.mp3
+
+      - name: Update RSS feed
+        env:
+          PODCAST_TAG: ${{ env.PODCAST_TAG }}
+          PODCAST_WEEK_LABEL: ${{ env.PODCAST_WEEK_LABEL }}
+        run: |
+          python -u src/update_rss.py
+
+      - name: Commit RSS changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/podcast.xml
+          git commit -m "Update podcast RSS for $PODCAST_TAG" || echo "No changes"
+          git push
