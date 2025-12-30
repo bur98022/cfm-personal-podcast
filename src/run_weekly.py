@@ -150,7 +150,8 @@ def main() -> None:
         sid = upload_text(service, scripts_folder_id, f"W{week_num:02d}_E{i:02d}.txt", ep_text)
         print(f"Uploaded script {i} (id={sid})")
 
-        mp3 = tts_to_mp3(ep_text, voice=voice, model=tts_model)
+        audio_text = ep_text.split("SHOW NOTES:", 1)[0].strip()
+        mp3 = tts_to_mp3(audio_text, voice=voice, model=tts_model)
         aid = upload_bytes(service, audio_folder_id, f"W{week_num:02d}_E{i:02d}.mp3", mp3, mime_type="audio/mpeg")
         print(f"Uploaded audio {i} (id={aid})")
 
