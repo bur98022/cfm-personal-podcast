@@ -27,6 +27,10 @@ jobs:
           ls -la src || true
           sed -n '1,80p' src/run_weekly.py || true
 
+      - name: Debug - show script_writer
+        run: |
+          sed -n '1,200p' src/script_writer.py
+
       - name: Run weekly generator
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
