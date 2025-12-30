@@ -21,7 +21,7 @@ jobs:
       - name: Install deps
         run: pip install -r requirements.txt
 
-      - name: Run weekly generator
+            - name: Run weekly generator
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
@@ -29,4 +29,6 @@ jobs:
           GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
           GOOGLE_OAUTH_REFRESH_TOKEN: ${{ secrets.GOOGLE_OAUTH_REFRESH_TOKEN }}
           TZ: America/Chicago
-        run: python src/run_weekly.py
+        run: |
+          python -u src/run_weekly.py
+
