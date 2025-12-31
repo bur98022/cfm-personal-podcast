@@ -71,15 +71,14 @@ def next_monday_local(tz_name: str = "America/Chicago") -> date:
     Return the date of the next Monday relative to 'now' in tz_name.
     If today is Monday, returns next week's Monday (upcoming week).
     """
-    # Python stdlib zoneinfo is available in 3.11+
     from zoneinfo import ZoneInfo
 
-    now = datetime.now(ZoneInfo(tz_name)).date()
+    today = datetime.now(ZoneInfo(tz_name)).date()
     # Monday = 0 ... Sunday = 6
-    days_ahead = (0 - now.weekday()) % 7
+    days_ahead = (0 - today.weekday()) % 7
     if days_ahead == 0:
         days_ahead = 7
-    return now + timedelta(days=days_ahead)
+    return today + timedelta(days=days_ahead)
 
 
 def find_week_by_start_date(index: list[dict], start_date_iso: str) -> Optional[dict]:
@@ -94,13 +93,9 @@ def find_week_by_start_date(index: list[dict], start_date_iso: str) -> Optional[
 # -----------------------------
 def drive_file_exists(service, parent_id: str, filename: str) -> bool:
     safe_name = filename.replace("'", "")
-    q = (
-        f"'{parent_id}' in parents and trashed=false "
-        f"and name='{safe_name}'"
-    )
+    q = f"'{parent_id}' in parents and trashed=false and name='{safe_name}'"
     res = service.files().list(q=q, fields="files(id,name)", pageSize=1).execute()
-    files = res.get("files", [])
-    return len(files) > 0
+    return len(res.get("files", [])) > 0
 
 
 def main() -> None:
@@ -114,12 +109,12 @@ def main() -> None:
     if not drive_root_id:
         raise SystemExit("Missing GDRIVE_FOLDER_ID")
 
-    # Load index (batch of ~8 weeks)
+    # Load full-year index
     index = load_index()
     if not index:
         raise SystemExit("Index is empty: cfm_index/cfm_2026_index.json")
 
-    # Pick the upcoming week (next Monday start)
+    # Select upcoming week based on next Monday (America/Chicago)
     start_dt = next_monday_local("America/Chicago")
     start_iso = start_dt.isoformat()
     week = find_week_by_start_date(index, start_iso)
@@ -127,7 +122,7 @@ def main() -> None:
     if not week:
         raise SystemExit(
             f"No week found in cfm_2026_index.json with start_date={start_iso}.\n"
-            "Add the next 8 weeks to the index file and rerun."
+            "Update the index file and rerun."
         )
 
     week_num = int(week["week"])
@@ -139,21 +134,34 @@ def main() -> None:
     print(f"Selected week: {week_num} | {week_dates} | {week_title}")
     print(f"Fetching: {url}")
 
+    # STEP 3: Prepare local dist/ and write week metadata for workflow
+    dist = Path("dist")
+    dist.mkdir(parents=True, exist_ok=True)
+
+    tag = f"week-{week['start_date']}"
+    week_label = f"{week['start_date']} to {week['end_date']}"
+
+    (dist / "week_meta.env").write_text(
+        f"PODCAST_TAG={tag}\nPODCAST_WEEK_LABEL={week_label}\n",
+        encoding="utf-8",
+    )
+    print(f"Wrote week metadata: {tag} | {week_label}")
+
     # Drive OAuth
     print("Connecting to Google Drive (OAuth)...")
     service = get_drive_service_oauth()
 
     # Folder naming: based on dates
     year_folder_id = find_or_create_folder(service, "2026 Old Testament", drive_root_id)
-    week_folder_name = f'{week["start_date"]} to {week["end_date"]}'
+    week_folder_name = week_label  # YYYY-MM-DD to YYYY-MM-DD
     week_folder_id = find_or_create_folder(service, week_folder_name, year_folder_id)
     scripts_folder_id = find_or_create_folder(service, "scripts", week_folder_id)
     audio_folder_id = find_or_create_folder(service, "audio", week_folder_id)
 
-    # Skip if already generated (look for first MP3)
+    # Skip if already generated (look for first MP3 in Drive)
     already = drive_file_exists(service, audio_folder_id, f"W{week_num:02d}_E01.mp3")
     if already:
-        print("This week already appears generated (found W##_E01.mp3). Exiting.")
+        print("This week already appears generated in Drive (found W##_E01.mp3). Exiting.")
         return
 
     # Fetch CFM content
@@ -212,22 +220,20 @@ def main() -> None:
         sid = upload_text(service, scripts_folder_id, f"W{week_num:02d}_E{i:02d}.txt", ep_text)
         print(f"Uploaded script {i} (id={sid})")
 
-        # Audio text excludes show notes
+        # Audio excludes show notes
         audio_text = strip_show_notes_for_audio(ep_text)
         mp3 = tts_to_mp3(audio_text, voice=voice, model=tts_model)
-        from pathlib import Path
 
-        dist = Path("dist")
-        dist.mkdir(parents=True, exist_ok=True)
-
+        # STEP 2: Save MP3 locally for GitHub Release + RSS
         mp3_filename = f"W{week_num:02d}_E{i:02d}.mp3"
-        mp3_path = dist / mp3_filename
-        mp3_path.write_bytes(mp3)
+        (dist / mp3_filename).write_bytes(mp3)
+        print(f"Saved local MP3: dist/{mp3_filename}")
 
+        # Upload MP3 to Drive as well (archive)
         aid = upload_bytes(
             service,
             audio_folder_id,
-            f"W{week_num:02d}_E{i:02d}.mp3",
+            mp3_filename,
             mp3,
             mime_type="audio/mpeg",
         )
