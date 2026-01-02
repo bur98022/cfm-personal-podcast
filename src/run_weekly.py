@@ -159,10 +159,16 @@ def main() -> None:
     audio_folder_id = find_or_create_folder(service, "audio", week_folder_id)
 
     # Skip if already generated (look for first MP3 in Drive)
+    force = os.getenv("FORCE_REGENERATE", "false").lower() == "true"
+
     already = drive_file_exists(service, audio_folder_id, f"W{week_num:02d}_E01.mp3")
-    if already:
-        print("This week already appears generated in Drive (found W##_E01.mp3). Exiting.")
-        return
+    if already and not force:
+    print("This week already appears generated in Drive (found W##_E01.mp3). Exiting.")
+    return
+
+    if already and force:
+    print("FORCE_REGENERATE=true — proceeding even though this week exists in Drive.")
+
 
     # Fetch CFM content
     cfm_text = fetch_cfm_week_text(url)
