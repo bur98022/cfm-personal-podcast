@@ -16,7 +16,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -47,7 +46,7 @@ jobs:
             echo "Found MP3 outputs in dist/"
           else
             echo "HAS_MP3=false" >> $GITHUB_ENV
-            echo "No MP3 outputs in dist/ (likely already generated); skipping release/RSS."
+            echo "No MP3 outputs in dist/ (likely already generated); skipping publish."
           fi
 
       - name: Load week metadata
@@ -55,8 +54,8 @@ jobs:
         run: |
           cat dist/week_meta.env
           cat dist/week_meta.env >> $GITHUB_ENV
-          
-            - name: Move MP3s into docs/media and commit
+
+      - name: Move MP3s into docs/media and commit
         if: env.HAS_MP3 == 'true'
         run: |
           mkdir -p "docs/media/$PODCAST_TAG"
@@ -68,12 +67,9 @@ jobs:
           git add "docs/media/$PODCAST_TAG"
           git commit -m "Add media files for $PODCAST_TAG" || echo "No media changes"
           git push
-      
+
       - name: Update RSS feed
         if: env.HAS_MP3 == 'true'
-        env:
-          PODCAST_TAG: ${{ env.PODCAST_TAG }}
-          PODCAST_WEEK_LABEL: ${{ env.PODCAST_WEEK_LABEL }}
         run: python -u src/update_rss.py
 
       - name: Commit RSS changes
