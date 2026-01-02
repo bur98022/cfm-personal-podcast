@@ -1,18 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0"
-  xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
+<?xml version='1.0' encoding='utf-8'?>
+<rss xmlns:ns0="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
 
   <channel>
-    <title>CFM Personal Podcast</title>
+    <item><title>Week 2026-01-05 to 2026-01-11 – W02_E04</title><description>Come, Follow Me companion episode (2026-01-05 to 2026-01-11).</description><link>https://github.com/bur98022/cfm-personal-podcast</link><guid isPermaLink="false">week-2026-01-05:W02_E04.mp3</guid><pubDate>Fri, 02 Jan 2026 02:31:05 GMT</pubDate><enclosure url="https://github.com/bur98022/cfm-personal-podcast/releases/download/week-2026-01-05/W02_E04.mp3" length="10358400" type="audio/mpeg" /></item><item><title>Week 2026-01-05 to 2026-01-11 – W02_E03</title><description>Come, Follow Me companion episode (2026-01-05 to 2026-01-11).</description><link>https://github.com/bur98022/cfm-personal-podcast</link><guid isPermaLink="false">week-2026-01-05:W02_E03.mp3</guid><pubDate>Fri, 02 Jan 2026 02:31:05 GMT</pubDate><enclosure url="https://github.com/bur98022/cfm-personal-podcast/releases/download/week-2026-01-05/W02_E03.mp3" length="10306560" type="audio/mpeg" /></item><item><title>Week 2026-01-05 to 2026-01-11 – W02_E02</title><description>Come, Follow Me companion episode (2026-01-05 to 2026-01-11).</description><link>https://github.com/bur98022/cfm-personal-podcast</link><guid isPermaLink="false">week-2026-01-05:W02_E02.mp3</guid><pubDate>Fri, 02 Jan 2026 02:31:05 GMT</pubDate><enclosure url="https://github.com/bur98022/cfm-personal-podcast/releases/download/week-2026-01-05/W02_E02.mp3" length="9663360" type="audio/mpeg" /></item><item><title>Week 2026-01-05 to 2026-01-11 – W02_E01</title><description>Come, Follow Me companion episode (2026-01-05 to 2026-01-11).</description><link>https://github.com/bur98022/cfm-personal-podcast</link><guid isPermaLink="false">week-2026-01-05:W02_E01.mp3</guid><pubDate>Fri, 02 Jan 2026 02:31:05 GMT</pubDate><enclosure url="https://github.com/bur98022/cfm-personal-podcast/releases/download/week-2026-01-05/W02_E01.mp3" length="10497120" type="audio/mpeg" /></item><title>CFM Personal Podcast</title>
     <link>https://github.com/bur98022/cfm-personal-podcast</link>
     <language>en-us</language>
     <description>
       Weekly Come, Follow Me companion podcast for personal and family study.
     </description>
 
-    <itunes:author>Brandon Burton</itunes:author>
-    <itunes:explicit>false</itunes:explicit>
-    <itunes:type>episodic</itunes:type>
+    <ns0:author>Brandon Burton</ns0:author>
+    <ns0:explicit>false</ns0:explicit>
+    <ns0:type>episodic</ns0:type>
 
   </channel>
 </rss>
