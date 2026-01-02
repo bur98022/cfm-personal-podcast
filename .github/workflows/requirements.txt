@@ -6,3 +6,4 @@ google-auth-oauthlib
 python-dateutil
 requests
 beautifulsoup4
+mutagen>=1.47.0
