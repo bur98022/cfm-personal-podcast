@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from datetime import datetime, timezone
 import xml.etree.ElementTree as ET
+import html
 
 RSS_PATH = Path("docs/podcast.xml")
 
@@ -25,14 +26,14 @@ def get_existing_guids(channel) -> set[str]:
 
 def main():
     repo = os.environ["GITHUB_REPOSITORY"]  # OWNER/REPO
-
     tag = os.environ["PODCAST_TAG"]
     week_label = os.environ["PODCAST_WEEK_LABEL"]
     week_num = os.environ.get("PODCAST_WEEK_NUM", "").strip()
     week_title = os.environ.get("PODCAST_WEEK_TITLE", "").strip()
     scripture_blocks = os.environ.get("PODCAST_SCRIPTURE_BLOCKS", "").strip()
 
-    base = f"https://github.com/{repo}/releases/download/{tag}"
+    # MP3s will be committed into docs/media/<tag>/
+    raw_base = f"https://raw.githubusercontent.com/{repo}/main/docs/media/{tag}"
     show_link = f"https://github.com/{repo}"
     pubdate = rfc2822_now()
 
@@ -44,23 +45,19 @@ def main():
 
     existing_guids = get_existing_guids(channel)
 
-    dist = Path("dist")
-    mp3s = sorted(dist.glob("W*_E*.mp3"))
+    media_dir = Path("docs") / "media" / tag
+    mp3s = sorted(media_dir.glob("W*_E*.mp3"))
     if not mp3s:
-        raise SystemExit("No MP3s found in dist/")
+        raise SystemExit(f"No MP3s found in {media_dir}")
 
-    # Insert new episodes at the top (newest first)
-    # We'll iterate in reverse so E04 ends up below E01 within the new block,
-    # or adjust if you prefer the opposite order.
+    # Add newest items at top
     for mp3 in sorted(mp3s, reverse=True):
         fname = mp3.name
         size = mp3.stat().st_size
-        url = f"{base}/{fname}"
+        url = f"{raw_base}/{fname}"
 
-        # Extract episode code (E01..E04)
-        ecode = fname.split("_")[-1].replace(".mp3", "").strip()
+        ecode = fname.split("_")[-1].replace(".mp3", "").strip()  # E01
         nice_ep = EPISODE_TITLES.get(ecode, ecode)
-
         guid_value = f"{tag}:{fname}"
         if guid_value in existing_guids:
             print(f"RSS: skipping existing item (guid={guid_value})")
@@ -70,9 +67,9 @@ def main():
 
         title_el = ET.SubElement(item, "title")
         if week_num:
-            title_el.text = f"Week {week_num} ({week_label}) — Episode {ecode[-2:]}: {nice_ep}"
+            title_el.text = html.escape(f"Week {week_num} ({week_label}) — Episode {ecode[-2:]}: {nice_ep}")
         else:
-            title_el.text = f"Week {week_label} — Episode {ecode[-2:]}: {nice_ep}"
+            title_el.text = html.escape(f"Week {week_label} — Episode {ecode[-2:]}: {nice_ep}")
 
         desc_el = ET.SubElement(item, "description")
         parts = []
@@ -81,7 +78,7 @@ def main():
         if scripture_blocks:
             parts.append(f"Study: {scripture_blocks}")
         parts.append(f"Week: {week_label}")
-        desc_el.text = " | ".join([p for p in parts if p])
+        desc_el.text = html.escape(" | ".join([p for p in parts if p]))
 
         link_el = ET.SubElement(item, "link")
         link_el.text = show_link
