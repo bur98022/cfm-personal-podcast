@@ -12,7 +12,12 @@
     <itunes:explicit>false</itunes:explicit>
     <itunes:type>episodic</itunes:type>
 
-    <itunes:email>brandonburton65@gmail.com</itunes:email>
+    <!-- Spotify/iTunes ownership block (this is what Spotify wants for verification) -->
+    <itunes:owner>
+      <itunes:name>Brandon Burton</itunes:name>
+      <itunes:email>brandonburton65@gmail.com</itunes:email>
+    </itunes:owner>
+
     <itunes:image href="https://bur98022.github.io/cfm-personal-podcast/podcast-artwork.jpg" />
     <itunes:category text="Religion &amp; Spirituality">
       <itunes:category text="Christianity" />
