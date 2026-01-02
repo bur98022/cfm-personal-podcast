@@ -14,7 +14,9 @@
     <ns0:type>episodic</ns0:type>
     <itunes:email>brandonburton65@gmail.com</itunes:email>
     <itunes:image href="https://bur98022.github.io/cfm-personal-podcast/podcast-artwork.png" />
+    <itunes:category text="Religion &amp; Spirituality">
+       <itunes:category text="Christianity" />
+    </itunes:category>
     
-
   </channel>
 </rss>
