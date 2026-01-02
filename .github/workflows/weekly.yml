@@ -55,6 +55,10 @@ jobs:
           cat dist/week_meta.env
           cat dist/week_meta.env >> $GITHUB_ENV
 
+      - name: Add ID3 tags to MP3s
+        if: env.HAS_MP3 == 'true'
+        run: python -u src/tag_mp3s.py
+
       - name: Move MP3s into docs/media and commit
         if: env.HAS_MP3 == 'true'
         run: |
