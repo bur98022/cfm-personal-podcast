@@ -32,8 +32,11 @@ def main():
     week_title = os.environ.get("PODCAST_WEEK_TITLE", "").strip()
     scripture_blocks = os.environ.get("PODCAST_SCRIPTURE_BLOCKS", "").strip()
 
-    # MP3s will be committed into docs/media/<tag>/
-    raw_base = f"https://raw.githubusercontent.com/{repo}/main/docs/media/{tag}"
+    # Use GitHub Pages to host MP3s (best compatibility)
+    # MP3s live at: docs/media/<tag>/<file>.mp3  --> Pages serves them at /media/<tag>/<file>.mp3
+    pages_base = f"https://{repo.split('/')[0]}.github.io/{repo.split('/')[1]}"
+    media_base = f"{pages_base}/media/{tag}"
+
     show_link = f"https://github.com/{repo}"
     pubdate = rfc2822_now()
 
@@ -54,11 +57,12 @@ def main():
     for mp3 in sorted(mp3s, reverse=True):
         fname = mp3.name
         size = mp3.stat().st_size
-        url = f"{raw_base}/{fname}"
+        url = f"{media_base}/{fname}"
 
         ecode = fname.split("_")[-1].replace(".mp3", "").strip()  # E01
         nice_ep = EPISODE_TITLES.get(ecode, ecode)
         guid_value = f"{tag}:{fname}"
+
         if guid_value in existing_guids:
             print(f"RSS: skipping existing item (guid={guid_value})")
             continue
@@ -97,7 +101,7 @@ def main():
 
         channel.insert(0, item)
         existing_guids.add(guid_value)
-        print(f"RSS: added {fname}")
+        print(f"RSS: added {fname} -> {url}")
 
     tree.write(RSS_PATH, encoding="utf-8", xml_declaration=True)
     print("RSS: podcast.xml updated successfully")
