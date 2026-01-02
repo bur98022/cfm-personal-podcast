@@ -32,10 +32,9 @@ jobs:
           GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
           GOOGLE_OAUTH_REFRESH_TOKEN: ${{ secrets.GOOGLE_OAUTH_REFRESH_TOKEN }}
           TZ: America/Chicago
-        run: |
-          python -u src/run_weekly.py
+        run: python -u src/run_weekly.py
 
-            - name: Check for MP3 outputs
+      - name: Check for MP3 outputs
         run: |
           if ls dist/*.mp3 1> /dev/null 2>&1; then
             echo "HAS_MP3=true" >> $GITHUB_ENV
@@ -64,8 +63,7 @@ jobs:
         env:
           PODCAST_TAG: ${{ env.PODCAST_TAG }}
           PODCAST_WEEK_LABEL: ${{ env.PODCAST_WEEK_LABEL }}
-        run: |
-          python -u src/update_rss.py
+        run: python -u src/update_rss.py
 
       - name: Commit RSS changes
         if: env.HAS_MP3 == 'true'
@@ -75,4 +73,3 @@ jobs:
           git add docs/podcast.xml
           git commit -m "Update podcast RSS for $PODCAST_TAG" || echo "No changes"
           git push
-
