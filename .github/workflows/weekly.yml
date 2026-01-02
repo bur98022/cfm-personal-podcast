@@ -55,15 +55,20 @@ jobs:
         run: |
           cat dist/week_meta.env
           cat dist/week_meta.env >> $GITHUB_ENV
-
-      - name: Create GitHub Release
+          
+      - name: Move MP3s into docs/media and commit
         if: env.HAS_MP3 == 'true'
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ env.PODCAST_TAG }}
-          name: ${{ env.PODCAST_TAG }}
-          files: dist/*.mp3
+        run: |
+          mkdir -p "docs/media/$PODCAST_TAG"
+          cp dist/*.mp3 "docs/media/$PODCAST_TAG/"
 
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add "docs/media/$PODCAST_TAG" dist/week_meta.env
+          git commit -m "Add media files for $PODCAST_TAG" || echo "No media changes"
+          git push
+      
       - name: Update RSS feed
         if: env.HAS_MP3 == 'true'
         env:
