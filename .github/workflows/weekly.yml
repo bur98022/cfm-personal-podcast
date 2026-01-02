@@ -56,7 +56,7 @@ jobs:
           cat dist/week_meta.env
           cat dist/week_meta.env >> $GITHUB_ENV
           
-      - name: Move MP3s into docs/media and commit
+            - name: Move MP3s into docs/media and commit
         if: env.HAS_MP3 == 'true'
         run: |
           mkdir -p "docs/media/$PODCAST_TAG"
@@ -65,7 +65,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add "docs/media/$PODCAST_TAG" dist/week_meta.env
+          git add "docs/media/$PODCAST_TAG"
           git commit -m "Add media files for $PODCAST_TAG" || echo "No media changes"
           git push
       
