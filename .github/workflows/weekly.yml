@@ -35,12 +35,24 @@ jobs:
         run: |
           python -u src/run_weekly.py
 
+            - name: Check for MP3 outputs
+        run: |
+          if ls dist/*.mp3 1> /dev/null 2>&1; then
+            echo "HAS_MP3=true" >> $GITHUB_ENV
+            echo "Found MP3 outputs in dist/"
+          else
+            echo "HAS_MP3=false" >> $GITHUB_ENV
+            echo "No MP3 outputs in dist/ (likely already generated); skipping release/RSS."
+          fi
+
       - name: Load week metadata
+        if: env.HAS_MP3 == 'true'
         run: |
           cat dist/week_meta.env
           cat dist/week_meta.env >> $GITHUB_ENV
 
       - name: Create GitHub Release
+        if: env.HAS_MP3 == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.PODCAST_TAG }}
@@ -48,6 +60,7 @@ jobs:
           files: dist/*.mp3
 
       - name: Update RSS feed
+        if: env.HAS_MP3 == 'true'
         env:
           PODCAST_TAG: ${{ env.PODCAST_TAG }}
           PODCAST_WEEK_LABEL: ${{ env.PODCAST_WEEK_LABEL }}
@@ -55,9 +68,11 @@ jobs:
           python -u src/update_rss.py
 
       - name: Commit RSS changes
+        if: env.HAS_MP3 == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/podcast.xml
           git commit -m "Update podcast RSS for $PODCAST_TAG" || echo "No changes"
           git push
+
