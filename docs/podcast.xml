@@ -1,5 +1,6 @@
-<?xml version='1.0' encoding='utf-8'?>
-<rss xmlns:ns0="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+  xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
 
   <channel>
     <title>CFM Personal Podcast</title>
@@ -7,15 +8,15 @@
     <language>en-us</language>
     <description>Weekly Come, Follow Me companion podcast for personal and family study.</description>
 
-    <ns0:author>Brandon Burton</ns0:author>
-    <ns0:explicit>false</ns0:explicit>
-    <ns0:type>episodic</ns0:type>
+    <itunes:author>Brandon Burton</itunes:author>
+    <itunes:explicit>false</itunes:explicit>
+    <itunes:type>episodic</itunes:type>
 
-    <ns0:email>brandonburton65@gmail.com</ns0:email>
-    <ns0:image href="https://bur98022.github.io/cfm-personal-podcast/podcast-artwork.jpg" />
-    <ns0:category text="Religion &amp; Spirituality">
-      <ns0:category text="Christianity" />
-    </ns0:category>
+    <itunes:email>brandonburton65@gmail.com</itunes:email>
+    <itunes:image href="https://bur98022.github.io/cfm-personal-podcast/podcast-artwork.jpg" />
+    <itunes:category text="Religion &amp; Spirituality">
+      <itunes:category text="Christianity" />
+    </itunes:category>
 
     <item>
       <title>Week 2 (2026-01-05 to 2026-01-11) — Episode 01: Big Picture &amp; Context</title>
@@ -23,7 +24,7 @@
       <link>https://github.com/bur98022/cfm-personal-podcast</link>
       <guid isPermaLink="false">week-2026-01-05:W02_E01.mp3</guid>
       <pubDate>Fri, 02 Jan 2026 03:01:57 GMT</pubDate>
-      <enclosure url="https://github.com/bur98022/cfm-personal-podcast/releases/download/week-2026-01-05/W02_E01.mp3" length="9769920" type="audio/mpeg" />
+      <enclosure url="https://bur98022.github.io/cfm-personal-podcast/media/week-2026-01-05/W02_E01.mp3" length="9769920" type="audio/mpeg" />
     </item>
 
     <item>
@@ -32,7 +33,7 @@
       <link>https://github.com/bur98022/cfm-personal-podcast</link>
       <guid isPermaLink="false">week-2026-01-05:W02_E02.mp3</guid>
       <pubDate>Fri, 02 Jan 2026 03:01:57 GMT</pubDate>
-      <enclosure url="https://github.com/bur98022/cfm-personal-podcast/releases/download/week-2026-01-05/W02_E02.mp3" length="6382560" type="audio/mpeg" />
+      <enclosure url="https://bur98022.github.io/cfm-personal-podcast/media/week-2026-01-05/W02_E02.mp3" length="6382560" type="audio/mpeg" />
     </item>
 
     <item>
@@ -41,7 +42,7 @@
       <link>https://github.com/bur98022/cfm-personal-podcast</link>
       <guid isPermaLink="false">week-2026-01-05:W02_E03.mp3</guid>
       <pubDate>Fri, 02 Jan 2026 03:01:57 GMT</pubDate>
-      <enclosure url="https://github.com/bur98022/cfm-personal-podcast/releases/download/week-2026-01-05/W02_E03.mp3" length="12348480" type="audio/mpeg" />
+      <enclosure url="https://bur98022.github.io/cfm-personal-podcast/media/week-2026-01-05/W02_E03.mp3" length="12348480" type="audio/mpeg" />
     </item>
 
     <item>
@@ -50,7 +51,7 @@
       <link>https://github.com/bur98022/cfm-personal-podcast</link>
       <guid isPermaLink="false">week-2026-01-05:W02_E04.mp3</guid>
       <pubDate>Fri, 02 Jan 2026 03:01:57 GMT</pubDate>
-      <enclosure url="https://github.com/bur98022/cfm-personal-podcast/releases/download/week-2026-01-05/W02_E04.mp3" length="11258400" type="audio/mpeg" />
+      <enclosure url="https://bur98022.github.io/cfm-personal-podcast/media/week-2026-01-05/W02_E04.mp3" length="11258400" type="audio/mpeg" />
     </item>
 
   </channel>
