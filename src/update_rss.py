@@ -5,15 +5,32 @@ import xml.etree.ElementTree as ET
 
 RSS_PATH = Path("docs/podcast.xml")
 
-def rfc2822_now():
-    return datetime.now(timezone.utc).strftime(
-        "%a, %d %b %Y %H:%M:%S GMT"
-    )
+EPISODE_TITLES = {
+    "E01": "Big Picture & Context",
+    "E02": "Scripture Walkthrough",
+    "E03": "Doctrines & Principles",
+    "E04": "Modern Life Application",
+}
+
+def rfc2822_now() -> str:
+    return datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S GMT")
+
+def get_existing_guids(channel) -> set[str]:
+    guids = set()
+    for item in channel.findall("item"):
+        g = item.findtext("guid")
+        if g:
+            guids.add(g.strip())
+    return guids
 
 def main():
-    repo = os.environ["GITHUB_REPOSITORY"]          # OWNER/REPO
-    tag = os.environ["PODCAST_TAG"]                # week-YYYY-MM-DD
-    week_label = os.environ["PODCAST_WEEK_LABEL"]  # YYYY-MM-DD to YYYY-MM-DD
+    repo = os.environ["GITHUB_REPOSITORY"]  # OWNER/REPO
+
+    tag = os.environ["PODCAST_TAG"]
+    week_label = os.environ["PODCAST_WEEK_LABEL"]
+    week_num = os.environ.get("PODCAST_WEEK_NUM", "").strip()
+    week_title = os.environ.get("PODCAST_WEEK_TITLE", "").strip()
+    scripture_blocks = os.environ.get("PODCAST_SCRIPTURE_BLOCKS", "").strip()
 
     base = f"https://github.com/{repo}/releases/download/{tag}"
     show_link = f"https://github.com/{repo}"
@@ -22,42 +39,71 @@ def main():
     tree = ET.parse(RSS_PATH)
     root = tree.getroot()
     channel = root.find("channel")
+    if channel is None:
+        raise SystemExit("Invalid RSS: missing <channel>")
+
+    existing_guids = get_existing_guids(channel)
 
     dist = Path("dist")
     mp3s = sorted(dist.glob("W*_E*.mp3"))
     if not mp3s:
         raise SystemExit("No MP3s found in dist/")
 
-    for mp3 in mp3s:
+    # Insert new episodes at the top (newest first)
+    # We'll iterate in reverse so E04 ends up below E01 within the new block,
+    # or adjust if you prefer the opposite order.
+    for mp3 in sorted(mp3s, reverse=True):
         fname = mp3.name
         size = mp3.stat().st_size
+        url = f"{base}/{fname}"
+
+        # Extract episode code (E01..E04)
+        ecode = fname.split("_")[-1].replace(".mp3", "").strip()
+        nice_ep = EPISODE_TITLES.get(ecode, ecode)
+
+        guid_value = f"{tag}:{fname}"
+        if guid_value in existing_guids:
+            print(f"RSS: skipping existing item (guid={guid_value})")
+            continue
 
         item = ET.Element("item")
 
-        title = ET.SubElement(item, "title")
-        title.text = f"Week {week_label} – {fname.replace('.mp3','')}"
+        title_el = ET.SubElement(item, "title")
+        if week_num:
+            title_el.text = f"Week {week_num} ({week_label}) — Episode {ecode[-2:]}: {nice_ep}"
+        else:
+            title_el.text = f"Week {week_label} — Episode {ecode[-2:]}: {nice_ep}"
 
-        desc = ET.SubElement(item, "description")
-        desc.text = f"Come, Follow Me companion episode ({week_label})."
+        desc_el = ET.SubElement(item, "description")
+        parts = []
+        if week_title:
+            parts.append(week_title)
+        if scripture_blocks:
+            parts.append(f"Study: {scripture_blocks}")
+        parts.append(f"Week: {week_label}")
+        desc_el.text = " | ".join([p for p in parts if p])
 
-        link = ET.SubElement(item, "link")
-        link.text = show_link
+        link_el = ET.SubElement(item, "link")
+        link_el.text = show_link
 
-        guid = ET.SubElement(item, "guid")
-        guid.text = f"{tag}:{fname}"
-        guid.set("isPermaLink", "false")
+        guid_el = ET.SubElement(item, "guid")
+        guid_el.text = guid_value
+        guid_el.set("isPermaLink", "false")
 
-        pub = ET.SubElement(item, "pubDate")
-        pub.text = pubdate
+        pub_el = ET.SubElement(item, "pubDate")
+        pub_el.text = pubdate
 
         enclosure = ET.SubElement(item, "enclosure")
-        enclosure.set("url", f"{base}/{fname}")
+        enclosure.set("url", url)
         enclosure.set("length", str(size))
         enclosure.set("type", "audio/mpeg")
 
         channel.insert(0, item)
+        existing_guids.add(guid_value)
+        print(f"RSS: added {fname}")
 
     tree.write(RSS_PATH, encoding="utf-8", xml_declaration=True)
+    print("RSS: podcast.xml updated successfully")
 
 if __name__ == "__main__":
     main()
