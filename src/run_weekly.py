@@ -4,6 +4,8 @@ import sys
 from pathlib import Path
 from typing import List, Optional
 from datetime import datetime, timedelta, date
+import urllib.request
+import urllib.error
 
 # Ensure repo root is importable (critical for GitHub Actions)
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -19,14 +21,11 @@ from src.script_writer import (
     word_count,
 )
 from src.tts import tts_to_mp3
-from src.drive_upload import (
-    get_drive_service_oauth,
-    find_or_create_folder,
-    upload_text,
-    upload_bytes,
-)
 
 
+# -----------------------------
+# Helpers
+# -----------------------------
 def load_index(path: str = "cfm_index/cfm_2026_index.json") -> list[dict]:
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
@@ -63,6 +62,7 @@ def next_monday_local(tz_name: str = "America/Chicago") -> date:
     from zoneinfo import ZoneInfo
 
     today = datetime.now(ZoneInfo(tz_name)).date()
+    # Monday = 0 ... Sunday = 6
     days_ahead = (0 - today.weekday()) % 7
     if days_ahead == 0:
         days_ahead = 7
@@ -76,27 +76,53 @@ def find_week_by_start_date(index: list[dict], start_date_iso: str) -> Optional[
     return None
 
 
-def drive_file_exists(service, parent_id: str, filename: str) -> bool:
-    safe_name = filename.replace("'", "")
-    q = f"'{parent_id}' in parents and trashed=false and name='{safe_name}'"
-    res = service.files().list(q=q, fields="files(id,name)", pageSize=1).execute()
-    return len(res.get("files", [])) > 0
+def head_ok(url: str, timeout: int = 20) -> bool:
+    """
+    Returns True if HEAD returns 2xx/3xx. False on errors/404.
+    """
+    try:
+        req = urllib.request.Request(url, method="HEAD")
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return 200 <= resp.status < 400
+    except Exception:
+        return False
 
 
+def github_pages_base() -> str:
+    """
+    Uses GITHUB_REPOSITORY=owner/repo to build:
+      https://owner.github.io/repo
+    """
+    repo = os.getenv("GITHUB_REPOSITORY", "").strip()
+    if not repo or "/" not in repo:
+        # Fallback: allow manual override if ever needed
+        override = os.getenv("PAGES_BASE_URL", "").strip()
+        if override:
+            return override.rstrip("/")
+        raise SystemExit("Missing GITHUB_REPOSITORY and no PAGES_BASE_URL override provided.")
+    owner, name = repo.split("/", 1)
+    return f"https://{owner}.github.io/{name}"
+
+
+# -----------------------------
+# Main
+# -----------------------------
 def main() -> None:
     print("RUN_WEEKLY: script started")
 
+    # Required env
     if not os.getenv("OPENAI_API_KEY"):
         raise SystemExit("Missing OPENAI_API_KEY")
 
-    drive_root_id = os.getenv("GDRIVE_FOLDER_ID")
-    if not drive_root_id:
-        raise SystemExit("Missing GDRIVE_FOLDER_ID")
+    force = os.getenv("FORCE_REGENERATE", "false").lower() == "true"
+    print(f"FORCE_REGENERATE={force}")
 
+    # Load full-year index
     index = load_index()
     if not index:
         raise SystemExit("Index is empty: cfm_index/cfm_2026_index.json")
 
+    # Select upcoming week based on next Monday (America/Chicago)
     start_dt = next_monday_local("America/Chicago")
     start_iso = start_dt.isoformat()
     week = find_week_by_start_date(index, start_iso)
@@ -124,8 +150,7 @@ def main() -> None:
     week_label = f"{week['start_date']} to {week['end_date']}"
 
     def esc(v: str) -> str:
-        # keep env file single-line per key
-        return v.replace("\n", " ").replace("\r", " ").strip()
+        return str(v).replace("\n", " ").replace("\r", " ").strip()
 
     (dist / "week_meta.env").write_text(
         "PODCAST_TAG={}\n"
@@ -143,44 +168,20 @@ def main() -> None:
     )
     print(f"Wrote week metadata: {tag} | {week_label}")
 
-    service = None
-    try:
-        print("Connecting to Google Drive (OAuth)...")
-        service = get_drive_service_oauth()
-    except Exception as e:
-        print(f"WARNING: Google Drive auth failed. Continuing without Drive uploads. Error: {e}")
-
-
-    year_folder_id = find_or_create_folder(service, "2026 Old Testament", drive_root_id)
-    week_folder_name = week_label
-    week_folder_id = find_or_create_folder(service, week_folder_name, year_folder_id)
-    scripts_folder_id = find_or_create_folder(service, "scripts", week_folder_id)
-    audio_folder_id = find_or_create_folder(service, "audio", week_folder_id)
-
-    # Skip logic with FORCE_REGENERATE
-    force = os.getenv("FORCE_REGENERATE", "false").lower() == "true"
-
-    already = drive_file_exists(
-        service,
-        audio_folder_id,
-        f"W{week_num:02d}_E01.mp3",
-    )
-
-    if already and not force:
-        print(
-            "This week already appears generated in Drive "
-            "(found W##_E01.mp3). Exiting."
-        )
+    # Skip if already published on GitHub Pages (unless force)
+    pages_base = github_pages_base()
+    already_url = f"{pages_base}/media/{tag}/W{week_num:02d}_E01.mp3"
+    if head_ok(already_url) and not force:
+        print(f"Already published on Pages (found {already_url}). Exiting.")
         return
+    if head_ok(already_url) and force:
+        print("Already published on Pages, but FORCE_REGENERATE=true — continuing anyway.")
 
-    if already and force:
-        print(
-            "FORCE_REGENERATE=true — proceeding even though this week exists in Drive."
-        )
-
+    # Fetch CFM content
     cfm_text = fetch_cfm_week_text(url)
     print(f"Fetched CFM text length: {len(cfm_text)} chars")
 
+    # Generate scripts
     master = load_master_prompt()
     prompt = build_prompt(
         master=master,
@@ -194,14 +195,17 @@ def main() -> None:
     scripts_text = generate_scripts(prompt=prompt, model="gpt-4o-mini")
     print(f"Generated scripts length: {len(scripts_text)} chars")
 
-    fid = upload_text(service, scripts_folder_id, "all_episodes.txt", scripts_text)
-    print(f"Uploaded all_episodes.txt (id={fid})")
+    # Save combined script locally so you have it even without Drive
+    (dist / "all_episodes.txt").write_text(scripts_text, encoding="utf-8")
+    print("Saved dist/all_episodes.txt")
 
+    # Split episodes
     episodes = split_episodes(scripts_text)
     print(f"Split into {len(episodes)} episode(s).")
     if len(episodes) != 4:
-        raise SystemExit("Could not split into 4 episodes. Check all_episodes.txt headers.")
+        raise SystemExit("Could not split into 4 episodes. Check episode headers in all_episodes.txt.")
 
+    # Enforce ~10 minutes (word-based)
     MIN_WORDS = 1300
     MAX_WORDS = 1600
     voice = "alloy"
@@ -225,24 +229,18 @@ def main() -> None:
             wc = word_count(ep_text)
             print(f"Episode {i} shortened words: {wc}")
 
-        sid = upload_text(service, scripts_folder_id, f"W{week_num:02d}_E{i:02d}.txt", ep_text)
-        print(f"Uploaded script {i} (id={sid})")
+        # Save script per-episode locally
+        script_name = f"W{week_num:02d}_E{i:02d}.txt"
+        (dist / script_name).write_text(ep_text, encoding="utf-8")
+        print(f"Saved dist/{script_name}")
 
+        # Generate MP3 (exclude SHOW NOTES)
         audio_text = strip_show_notes_for_audio(ep_text)
         mp3 = tts_to_mp3(audio_text, voice=voice, model=tts_model)
 
         mp3_filename = f"W{week_num:02d}_E{i:02d}.mp3"
         (dist / mp3_filename).write_bytes(mp3)
-        print(f"Saved local MP3: dist/{mp3_filename}")
-
-        aid = upload_bytes(
-            service,
-            audio_folder_id,
-            mp3_filename,
-            mp3,
-            mime_type="audio/mpeg",
-        )
-        print(f"Uploaded audio {i} (id={aid})")
+        print(f"Saved dist/{mp3_filename}")
 
     print("RUN_WEEKLY: done")
 
