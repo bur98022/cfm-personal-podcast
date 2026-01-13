@@ -2,9 +2,11 @@ import os
 from pathlib import Path
 from datetime import datetime, timezone
 import xml.etree.ElementTree as ET
-import html
 
 RSS_PATH = Path("docs/podcast.xml")
+
+ITUNES_NS = "http://www.itunes.com/dtds/podcast-1.0.dtd"
+ET.register_namespace("itunes", ITUNES_NS)
 
 EPISODE_TITLES = {
     "E01": "Big Picture & Context",
@@ -32,9 +34,9 @@ def main():
     week_title = os.environ.get("PODCAST_WEEK_TITLE", "").strip()
     scripture_blocks = os.environ.get("PODCAST_SCRIPTURE_BLOCKS", "").strip()
 
-    # Use GitHub Pages to host MP3s (best compatibility)
-    # MP3s live at: docs/media/<tag>/<file>.mp3  --> Pages serves them at /media/<tag>/<file>.mp3
-    pages_base = f"https://{repo.split('/')[0]}.github.io/{repo.split('/')[1]}"
+    # GitHub Pages base
+    owner, name = repo.split("/", 1)
+    pages_base = f"https://{owner}.github.io/{name}"
     media_base = f"{pages_base}/media/{tag}"
 
     show_link = f"https://github.com/{repo}"
@@ -71,9 +73,9 @@ def main():
 
         title_el = ET.SubElement(item, "title")
         if week_num:
-            title_el.text = html.escape(f"Week {week_num} ({week_label}) — Episode {ecode[-2:]}: {nice_ep}")
+            title_el.text = f"Week {week_num} ({week_label}) — Episode {ecode[-2:]}: {nice_ep}"
         else:
-            title_el.text = html.escape(f"Week {week_label} — Episode {ecode[-2:]}: {nice_ep}")
+            title_el.text = f"Week {week_label} — Episode {ecode[-2:]}: {nice_ep}"
 
         desc_el = ET.SubElement(item, "description")
         parts = []
@@ -82,7 +84,7 @@ def main():
         if scripture_blocks:
             parts.append(f"Study: {scripture_blocks}")
         parts.append(f"Week: {week_label}")
-        desc_el.text = html.escape(" | ".join([p for p in parts if p]))
+        desc_el.text = " | ".join([p for p in parts if p])
 
         link_el = ET.SubElement(item, "link")
         link_el.text = show_link
