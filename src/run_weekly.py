@@ -143,8 +143,13 @@ def main() -> None:
     )
     print(f"Wrote week metadata: {tag} | {week_label}")
 
-    print("Connecting to Google Drive (OAuth)...")
-    service = get_drive_service_oauth()
+    service = None
+    try:
+        print("Connecting to Google Drive (OAuth)...")
+        service = get_drive_service_oauth()
+    except Exception as e:
+        print(f"WARNING: Google Drive auth failed. Continuing without Drive uploads. Error: {e}")
+
 
     year_folder_id = find_or_create_folder(service, "2026 Old Testament", drive_root_id)
     week_folder_name = week_label
