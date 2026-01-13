@@ -64,8 +64,6 @@ def next_monday_local(tz_name: str = "America/Chicago") -> date:
     today = datetime.now(ZoneInfo(tz_name)).date()
     # Monday = 0 ... Sunday = 6
     days_ahead = (0 - today.weekday()) % 7
-    if days_ahead == 0:
-        days_ahead = 7
     return today + timedelta(days=days_ahead)
 
 
