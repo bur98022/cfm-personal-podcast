@@ -1,27 +1,26 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0"
-  xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
+<?xml version='1.0' encoding='utf-8'?>
+<rss xmlns:ns0="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
 
   <channel>
-    <title>CFM Personal Podcast</title>
+    <item><title>Week 4 (2026-01-19 to 2026-01-25) — Episode 01: Big Picture &amp;amp; Context</title><description>The Fall of Adam and Eve | Study: Genesis 3–4; Moses 4–5 | Week: 2026-01-19 to 2026-01-25</description><link>https://github.com/bur98022/cfm-personal-podcast</link><guid isPermaLink="false">week-2026-01-19:W04_E01.mp3</guid><pubDate>Tue, 13 Jan 2026 04:29:29 GMT</pubDate><enclosure url="https://bur98022.github.io/cfm-personal-podcast/media/week-2026-01-19/W04_E01.mp3" length="9232724" type="audio/mpeg" /></item><item><title>Week 4 (2026-01-19 to 2026-01-25) — Episode 02: Scripture Walkthrough</title><description>The Fall of Adam and Eve | Study: Genesis 3–4; Moses 4–5 | Week: 2026-01-19 to 2026-01-25</description><link>https://github.com/bur98022/cfm-personal-podcast</link><guid isPermaLink="false">week-2026-01-19:W04_E02.mp3</guid><pubDate>Tue, 13 Jan 2026 04:29:29 GMT</pubDate><enclosure url="https://bur98022.github.io/cfm-personal-podcast/media/week-2026-01-19/W04_E02.mp3" length="9151523" type="audio/mpeg" /></item><item><title>Week 4 (2026-01-19 to 2026-01-25) — Episode 03: Doctrines &amp;amp; Principles</title><description>The Fall of Adam and Eve | Study: Genesis 3–4; Moses 4–5 | Week: 2026-01-19 to 2026-01-25</description><link>https://github.com/bur98022/cfm-personal-podcast</link><guid isPermaLink="false">week-2026-01-19:W04_E03.mp3</guid><pubDate>Tue, 13 Jan 2026 04:29:29 GMT</pubDate><enclosure url="https://bur98022.github.io/cfm-personal-podcast/media/week-2026-01-19/W04_E03.mp3" length="11299269" type="audio/mpeg" /></item><item><title>Week 4 (2026-01-19 to 2026-01-25) — Episode 04: Modern Life Application</title><description>The Fall of Adam and Eve | Study: Genesis 3–4; Moses 4–5 | Week: 2026-01-19 to 2026-01-25</description><link>https://github.com/bur98022/cfm-personal-podcast</link><guid isPermaLink="false">week-2026-01-19:W04_E04.mp3</guid><pubDate>Tue, 13 Jan 2026 04:29:29 GMT</pubDate><enclosure url="https://bur98022.github.io/cfm-personal-podcast/media/week-2026-01-19/W04_E04.mp3" length="9048221" type="audio/mpeg" /></item><title>CFM Personal Podcast</title>
     <link>https://github.com/bur98022/cfm-personal-podcast</link>
     <language>en-us</language>
     <description>Weekly Come, Follow Me companion podcast for personal and family study.</description>
 
-    <itunes:author>Brandon Burton</itunes:author>
-    <itunes:explicit>false</itunes:explicit>
-    <itunes:type>episodic</itunes:type>
+    <ns0:author>Brandon Burton</ns0:author>
+    <ns0:explicit>false</ns0:explicit>
+    <ns0:type>episodic</ns0:type>
 
-    <!-- Spotify/iTunes ownership block (this is what Spotify wants for verification) -->
-    <itunes:owner>
-      <itunes:name>Brandon Burton</itunes:name>
-      <itunes:email>brandonburton65@gmail.com</itunes:email>
-    </itunes:owner>
+    
+    <ns0:owner>
+      <ns0:name>Brandon Burton</ns0:name>
+      <ns0:email>brandonburton65@gmail.com</ns0:email>
+    </ns0:owner>
 
-    <itunes:image href="https://bur98022.github.io/cfm-personal-podcast/podcast-artwork.jpg" />
-    <itunes:category text="Religion &amp; Spirituality">
-      <itunes:category text="Christianity" />
-    </itunes:category>
+    <ns0:image href="https://bur98022.github.io/cfm-personal-podcast/podcast-artwork.jpg" />
+    <ns0:category text="Religion &amp; Spirituality">
+      <ns0:category text="Christianity" />
+    </ns0:category>
 
     <item>
       <title>Week 2 (2026-01-05 to 2026-01-11) — Episode 01: Big Picture &amp; Context</title>
