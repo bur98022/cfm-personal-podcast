@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import List, Optional
 from datetime import datetime, timedelta, date
 import urllib.request
-import urllib.error
 
 # Ensure repo root is importable (critical for GitHub Actions)
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -58,13 +57,45 @@ def strip_show_notes_for_audio(ep_text: str) -> str:
     return ep_text.split("SHOW NOTES:", 1)[0].strip()
 
 
-def next_monday_local(tz_name: str = "America/Chicago") -> date:
+def most_recent_monday_local(tz_name: str = "America/Chicago") -> date:
+    """
+    Returns the Monday of the current week in local time.
+    If today is Monday, returns today.
+    """
     from zoneinfo import ZoneInfo
 
     today = datetime.now(ZoneInfo(tz_name)).date()
-    # Monday = 0 ... Sunday = 6
+    # Monday=0 ... Sunday=6
+    return today - timedelta(days=today.weekday())
+
+
+def next_monday_local(tz_name: str = "America/Chicago") -> date:
+    """
+    Returns the next Monday after today in local time.
+    If today is Monday, returns today + 7 days.
+    """
+    from zoneinfo import ZoneInfo
+
+    today = datetime.now(ZoneInfo(tz_name)).date()
     days_ahead = (0 - today.weekday()) % 7
+    if days_ahead == 0:
+        days_ahead = 7
     return today + timedelta(days=days_ahead)
+
+
+def choose_week_start_date_iso(tz_name: str = "America/Chicago") -> str:
+    """
+    Default behavior:
+      - If run on Sunday (local), generate the UPCOMING Monday week.
+      - Otherwise (Mon–Sat), generate the CURRENT week's Monday.
+    This prevents missing a week when a scheduled run fails.
+    """
+    from zoneinfo import ZoneInfo
+
+    today = datetime.now(ZoneInfo(tz_name)).date()
+    if today.weekday() == 6:  # Sunday
+        return next_monday_local(tz_name).isoformat()
+    return most_recent_monday_local(tz_name).isoformat()
 
 
 def find_week_by_start_date(index: list[dict], start_date_iso: str) -> Optional[dict]:
@@ -93,7 +124,6 @@ def github_pages_base() -> str:
     """
     repo = os.getenv("GITHUB_REPOSITORY", "").strip()
     if not repo or "/" not in repo:
-        # Fallback: allow manual override if ever needed
         override = os.getenv("PAGES_BASE_URL", "").strip()
         if override:
             return override.rstrip("/")
@@ -108,7 +138,6 @@ def github_pages_base() -> str:
 def main() -> None:
     print("RUN_WEEKLY: script started")
 
-    # Required env
     if not os.getenv("OPENAI_API_KEY"):
         raise SystemExit("Missing OPENAI_API_KEY")
 
@@ -120,15 +149,22 @@ def main() -> None:
     if not index:
         raise SystemExit("Index is empty: cfm_index/cfm_2026_index.json")
 
-    # Select upcoming week based on next Monday (America/Chicago)
-    start_dt = next_monday_local("America/Chicago")
-    start_iso = start_dt.isoformat()
-    week = find_week_by_start_date(index, start_iso)
+    # Manual override (optional): TARGET_START_DATE=YYYY-MM-DD
+    target_start = os.getenv("TARGET_START_DATE", "").strip()
 
+    if target_start:
+        start_iso = target_start
+        print(f"TARGET_START_DATE override enabled: {start_iso}")
+    else:
+        # Default behavior: Sunday -> next Monday; Mon–Sat -> current Monday
+        start_iso = choose_week_start_date_iso("America/Chicago")
+        print(f"Auto-selected start_date={start_iso}")
+
+    week = find_week_by_start_date(index, start_iso)
     if not week:
         raise SystemExit(
             f"No week found in cfm_2026_index.json with start_date={start_iso}.\n"
-            "Update the index file and rerun."
+            "Verify TARGET_START_DATE or update the index file."
         )
 
     week_num = int(week["week"])
@@ -169,6 +205,7 @@ def main() -> None:
     # Skip if already published on GitHub Pages (unless force)
     pages_base = github_pages_base()
     already_url = f"{pages_base}/media/{tag}/W{week_num:02d}_E01.mp3"
+
     if head_ok(already_url) and not force:
         print(f"Already published on Pages (found {already_url}). Exiting.")
         return
@@ -193,7 +230,6 @@ def main() -> None:
     scripts_text = generate_scripts(prompt=prompt, model="gpt-4o-mini")
     print(f"Generated scripts length: {len(scripts_text)} chars")
 
-    # Save combined script locally so you have it even without Drive
     (dist / "all_episodes.txt").write_text(scripts_text, encoding="utf-8")
     print("Saved dist/all_episodes.txt")
 
